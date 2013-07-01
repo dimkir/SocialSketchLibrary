@@ -1,3 +1,4 @@
+package libraryexample;
 /**
  * Implements concept of FixedStringLog (log of last N String messages)
  * 

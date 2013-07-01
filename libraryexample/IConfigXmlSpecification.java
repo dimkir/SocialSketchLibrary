@@ -1,3 +1,4 @@
+package libraryexample;
 /**
  *  These are constants specified for the xml file.
  * AND!! These are also KEYS which are used by the Map<> data

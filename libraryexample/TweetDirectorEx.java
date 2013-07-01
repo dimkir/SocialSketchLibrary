@@ -1,3 +1,4 @@
+package libraryexample;
 /**
  * This is exception thrown by TweetDirector.
  */

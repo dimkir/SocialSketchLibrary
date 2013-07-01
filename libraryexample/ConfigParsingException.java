@@ -1,3 +1,5 @@
+package libraryexample;
+import processing.core.*;
 /**
  *  Is thrown if there's error when LibConfig is loading.
  * TODO: rather should be named ConfigLoadException , because
