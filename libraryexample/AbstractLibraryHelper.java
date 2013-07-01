@@ -1,18 +1,18 @@
+package libraryexample;
+import processing.core.*;
 /**
  * This is just abstract superclass which all library-helpers are inheriting.
  * Incuim it only obligates to implements toString();
  */
 abstract class AbstractLibraryHelper extends AbstractLibraryBase // incuim the base only saves .parent and defines println()
 {
-  private PApplet mParent; 
+  //private PApplet mParent; 
    
   
   AbstractLibraryHelper(PApplet parent){
-    if ( parent == null ){
-       throw new IllegalParameterException("When initializing library Parent cannot be null");
-    }
+    super(parent);
     
-     mParent = parent;
+     //mParent = parent;
   }
   
   protected PApplet sketch(){
@@ -23,15 +23,5 @@ abstract class AbstractLibraryHelper extends AbstractLibraryBase // incuim the b
      return mParent;
   }
   
-   @Override
-   public void toString(){
-      // todo: if we don't override, then the client may be calling toString and may be failing.. haha
-      throw new RuntimeException("The abstract library helper: toString() should be OBLIGATORY overridden by the subclass");
-   }
-   
-   
-   protected void log(String s){
-      mParent.println(s);
-   }
-  
+ 
 }
