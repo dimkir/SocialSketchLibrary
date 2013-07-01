@@ -1,26 +1,29 @@
 /**
- * Encapsulates library drawing effects (like drawing red background and also drawing grid on top of sketch.
- * Remember that this drawing happens with "brush" settings of the sketch. 
- * Some sketches may be dependent on the fact that fill/stroke params DO NOT change frame to frame. Thus we have to save 
- * and restore them before and after.
+ * Encapsulates library drawing effects 
+ * Eg. drawing red background and also drawing grid on top of sketch.
+ 
+ * REMEMBER: Drawing happens with "brush" settings of the sketch.
+ 
+ * Some sketches may be dependent on the fact that fill/stroke params 
+ * DO NOT change frame to frame. Thus we have to save and restore them before and after.
  */
 class LibraryDrawing extends AbstractLibraryHelper
 {
-  private final PApplet parent; // through this one all drawing happens.
+  /**
+   * @var C_LINE_PADDING - spacing between lines when .displayStringLog() is called
+   */
+  private final static int C_LINE_PADDING = 10;
   
-  LibraryDrawing(PApplet p){
-     parent = p;
+  
+  private FontBoss mFontBoss;
+  LibraryDrawing(PApplet p, FontBoss fboss){
+     super(p);
+     mFontBoss = fboss;
   }
   
   
   // here we may want to implement some "saving" or "storing" of brush params (fill/stroke)
   ?pushBrushParameters()
-  
-  /**
-   * So that you can use drawing methods, init it with instnace of PApplet which carries drawing interface (like line() and fill());
-  LibraryDrawing(PApplet p){
-     parent = p;
-  }
   
   /**
    * Draws red rectangle with width equal to 80% of the display screen.
@@ -58,23 +61,32 @@ class LibraryDrawing extends AbstractLibraryHelper
   
   
   /**
-   *  Displays on screen several lines of text. 
+   * Displays on screen several lines of text. 
    * Usually used to show log of operations.
+   * @param 
    */
-  void displayStringLog(String[] logLines){
-     ???
+  void displayStringLog(FixedStringLog fixStrLog, float xx, float yy){
+      float fontSz = mFontBoss.getFontSize();
+      
+      for(int i = 0 ;  i <  fixStrLog.size() ; i++){
+        text(fixStrLog.get(i), xx, yy);
+        yy += fontSz + C_LINE_PADDING;
+      }
+      
   }
   
   void displayFrameRate(){
      int bottomY = parent.height - 180;
      int bottomX = 20;
-     // textFont(font);
-     // text("Framerate: " + frameRate, bottomX, bottomY);
+     text("Framerate: " + (int) parent.frameRate, bottomX, bottomY);
      
-     parent.textFont(font);
-     parent.fill(255);
-     parent.text("Framerate: " + (int) parent.frameRate, bottomX, bottomY);
-     
+  }
+  
+  /**
+   *  Fluentizer, to make it simplier.
+   */
+  private void text(String s, float xx, float yy){
+     mFontBoss.text(s, xx, yy);
   }
   
 }
