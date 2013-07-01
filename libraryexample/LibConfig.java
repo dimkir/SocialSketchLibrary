@@ -27,7 +27,7 @@ class LibConfig extends AbstractLibraryHelper
    * config xml file. This environment variable is used in case there's no 
    * config xml specified when instantiating LibConfig.
    */
-  private static final String C_ENVIRONMENT_VARIABLE_NAME = "PROCESSING_TWITSHOT_CONFIGFILE";
+  private static final String C_ENVIRONMENT_VARIABLE_NAME = "PROCESSING_TWITSHOT_CONFIGXML";
   
   
   private Map<String, String> mMap = new HashMap<String, String>();
