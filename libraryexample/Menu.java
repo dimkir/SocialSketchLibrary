@@ -7,7 +7,8 @@ class Menu extends AbstractLibraryHelper
 {
   
   private LibraryDrawing mLD;
-  
+  private boolean mIsDisplayed;
+
   
   Menu(PApplet parent, LibraryDrawing ld){
      super(parent);
@@ -20,8 +21,14 @@ class Menu extends AbstractLibraryHelper
    */
   boolean isDisplayedFlag(){
     //TODO: what does this do?
-    return false;
+    return mIsDisplayed;
   }
+  
+  
+  void setDisplayedFlag(boolean vIsDisplayed){
+     mIsDisplayed = vIsDisplayed;
+  }
+  
   
   /**
    * Draws to default rednerer, stated in the beginning.
