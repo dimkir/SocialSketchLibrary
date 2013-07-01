@@ -1,3 +1,5 @@
+package libraryexample;
+import processing.core.*;
 /**
  *  Just fancy name class which encapsulates operations with fonts.
  * 
@@ -23,9 +25,13 @@ class FontBoss extends AbstractLibraryHelper
    * Incuim uses "createFont()" for Arial
    */
   private void initFont(){
-     mFont = parent.createFont(C_DEFAULT_FONT_NAME, C_DEFAULT_FONT_SIZE); 
+     mFont = parent().createFont(C_DEFAULT_FONT_NAME, C_DEFAULT_FONT_SIZE); 
   }  
   
+  
+  float getFontSize(){
+     return C_DEFAULT_FONT_SIZE;
+  }
   
   
   
