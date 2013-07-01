@@ -1,3 +1,6 @@
+package libraryexample;
+import processing.core.*;
+import processing.event.*;
 /**
  * This class just encapsulates operations with the keys.
  * Fluentizes access to them from my library code.
@@ -31,8 +34,7 @@ class KeyManager extends AbstractLibraryHelper
     * Registers and tests the key event
     */
    void keyEvent(KeyEvent evt){
-      println(evt.toString());
-      printKeyEvent();
+      printKeyEvent(evt);
       
       // now here I should set all the key flags.
       mPressedMenuExit = checkKey(VK.ESCAPE);
