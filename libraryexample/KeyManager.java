@@ -37,9 +37,23 @@ class KeyManager extends AbstractLibraryHelper
       printKeyEvent(evt);
       
       // now here I should set all the key flags.
-      mPressedMenuExit = checkKey(VK.ESCAPE);
-      mPressedMenuOpenKey = checkKey(VK.INSERT);
-      mPressedTweetKey = checkKey(VK.ENTER) || checkKey(VK.RETURN); // on Mac it may be RETURN key
+      mPressedMenuExitKey = checkKey(KeyConstants.VK_ESCAPE);
+      mPressedMenuOpenKey = checkKey(KeyConstants.VK_INSERT);
+      mPressedTweetKey = checkKey(KeyConstants.VK_ENTER); // there's no return key definitinon. but it should be dec(36)  || checkKey(KeyConstants.VK_RETURN); // on Mac it may be RETURN key
+                                                           // {@link http://web.archive.org/web/20100501161453/http://www.classicteck.com/rbarticles/mackeyboard.php}
+   }
+   
+   
+   /**
+    * Checks if the key was pressed.
+    * The trick is that it has to keep some 
+    * tracking of which keys are pressed/released. 
+    * Or what's happening in case the key wasp pressed/or released
+    * outside of procesing window... we won't receive this evnt??? no?
+    */
+   boolean checkKey(int someKeyCode){
+     //TODO: implement check key
+     return false;
    }
    
    
