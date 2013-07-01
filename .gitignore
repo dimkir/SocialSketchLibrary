@@ -1,5 +1,6 @@
 #dr java backup
 *.java~
+MyBasicLibrary.drjava
 
 # Compiled source #
 ###################
