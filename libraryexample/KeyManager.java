@@ -1,5 +1,8 @@
 /**
- * This class just encapsulates operations with the keys. Fluentizes access to them from my library code.
+ * This class just encapsulates operations with the keys.
+ * Fluentizes access to them from my library code.
+ * 
+ * 
  */
 class KeyManager extends AbstractLibraryHelper
 {
@@ -10,9 +13,10 @@ class KeyManager extends AbstractLibraryHelper
 //   private boolean mPressedKey = false;
    
    
-//   KeyManager(PApplet papp){
-//      super(papp);
-//   }
+   
+   KeyManager(PApplet papp){
+      super(papp);
+   }
   
    boolean  pressedMenuExitKey()
    {
