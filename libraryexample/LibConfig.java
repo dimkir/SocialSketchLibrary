@@ -1,4 +1,8 @@
+package libraryexample;
+import processing.core.*;
+import processing.data.XML;
 import java.util.HashMap;
+import java.util.Map;
 /**
  *  Loads and stores config info for the library.
  *  Always loads it from config file.
@@ -12,7 +16,7 @@ import java.util.HashMap;
  * On failure? - class is unusable. And constructor throws exception, means noone ever receives instance reference.
  */
 class LibConfig extends AbstractLibraryHelper
-  implements TweetConstants , IConfigXmlSpecification
+  implements IConfigXmlSpecification
   // this is so that we can construct the stringar to return TwitterConfiguration parameters.
 {
   
@@ -93,7 +97,7 @@ class LibConfig extends AbstractLibraryHelper
    * Returns where the configuration was obtained from. (Usually shows filepath and commnet)
    */
   String getConfigAnnotation(){
-     return mXmlOriginComment;
+     return mConfigurationAnnotation;
   }
   
   /**
@@ -114,12 +118,12 @@ class LibConfig extends AbstractLibraryHelper
      XML[] children = xmlRootNode.getChildren(C_PROFILE_TAG); // let's ask if there're any "profile" nodes.
      
      if ( children == null){
-        throw new ConfigParseException("Error, cannot find '<" + C_PROFILE_TAG + ">' tag inside of xml root." +
+        throw new ConfigParsingException("Error, cannot find '<" + C_PROFILE_TAG + ">' tag inside of xml root." +
                                        "That tag usually contains all the credentials for twitter");
      }
      
      if ( children.length != 1 ){
-        throw new ConfigParseException("Error, found (" + children.length + ") <" + C_PROFILE_TAG + "> tags. Only 1 is allowed.");
+        throw new ConfigParsingException("Error, found (" + children.length + ") <" + C_PROFILE_TAG + "> tags. Only 1 is allowed.");
      }
       
      XML profileNode = children[0];
@@ -135,6 +139,27 @@ class LibConfig extends AbstractLibraryHelper
     
   }
 
+  
+  /**
+   * Retrieves detail from the XML node or throws exception if 
+   * subnode with such name doesn't exist.
+   * @return String with the value of the subnode.
+   * @throws ConfigParsingException
+   */
+  private String getDetailOrThrow(String key, XML node) throws ConfigParsingException
+  {
+      XML[] children = node.getChildren(key);
+      if ( children == null){
+         throw new ConfigParsingException("node <" + node.getName() + "> doesn't have subnode <" + key +">");
+      }
+      
+      if ( children.length != 1 ){
+         throw new ConfigParsingException("node <" + node.getName() + "> has diffrent value than 1 (value:" + children.length + 
+                                          "of subnodes <" + key + ">");
+      }
+      
+      return children[0].getContent(); // get content value of the subnode
+  }
   
   /**
    *  This is fluentizer and abstract way of saying that i wnat to 
@@ -167,11 +192,11 @@ class LibConfig extends AbstractLibraryHelper
    * values set - they may return null.
    *********************************/
   public String getUserToken(){
-    return getData(C_USER_TOKEN);
+    return getData(C_CONSUMER_KEY);
   }
   
   public String getUserSecret(){
-     return getData(C_USER_SECRET);
+     return getData(C_CONSUMER_SECRET);
   }
   
   public String getOAuthToken(){
@@ -192,8 +217,8 @@ class LibConfig extends AbstractLibraryHelper
   Map<String,String> getTwitterConfiguration(){
     Map<String, String> configMap = new HashMap<String, String>();
     String[] keys = { C_OAUTH_SECRET, C_OAUTH_TOKEN, C_CONSUMER_SECRET, C_CONSUMER_KEY };
-    for( Stirng key : keys){
-       configMap.put(key, dataRead(key));
+    for( String key : keys){
+       configMap.put(key, getData(key));
     }
     return configMap;
   }
@@ -202,7 +227,7 @@ class LibConfig extends AbstractLibraryHelper
    * Returns configuration status.
    */
   @Override
-  public void toString(){
+  public String toString(){
      return "LibConfig data and loading status: " + mMap.toString();
   }
 }
