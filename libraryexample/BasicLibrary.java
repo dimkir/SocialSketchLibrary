@@ -1,5 +1,6 @@
 package libraryexample;
 import processing.core.*;
+import processing.event.*;
 
 /**
  * TWITSHOT (TODO: to change package and classname to this package
@@ -8,14 +9,12 @@ import processing.core.*;
  */
 public class BasicLibrary  extends AbstractLibraryBase // the AbstractBase just holds some basic methods like prinltn() and other convenience methods. As well as protected field .parent)
 {
-  
-  /**
-   * What are these helpers?
-   */
-  private AbstractLibraryHelper[] libraryHelpers = new AbstractLibraryHelper[6];  // this is just here to put all of the 
-  // all of the objects below will be added to the ^^^^^^ above array, so that it is possible to quickly loop through them.
-  // and print out their status.
 
+  /**
+   * Coordinates of where FixedLog of the twitter status will be shown
+   */
+  private static final int C_STRING_LOG_X   = 20;
+  private static final int C_STRING_LOG_Y   = 40;
   
   /**
    * Generally, I encapsulated all of the functionality related to some domains
@@ -31,7 +30,7 @@ public class BasicLibrary  extends AbstractLibraryBase // the AbstractBase just 
 
   private LibraryDrawing libraryDrawing;       // handles drawing (basic concepts)
   private Menu menu;                           // more appropriate name should be "gui"
-  private TwitterDirector twitterDirector;     // offers convenience twitter messaging API
+  private TweetDirector tweetDirector;     // offers convenience twitter messaging API
   
   
   
@@ -48,11 +47,11 @@ public class BasicLibrary  extends AbstractLibraryBase // the AbstractBase just 
      // we then shouldn't proceed with method registration and further initialization.
      mLibConfig = new LibConfig(parent, xmlConfigFile); // throws ConfigParsingException::LibraryLoadException
      
-     initLibrary(); // here we properly init library and print the status.
+     initLibrary(parent); // here we properly init library and print the status.
      
      // if we're here, that means that background thread is running. We need to register "stop()" so that 
      // we stop that thread on exit
-     registerMethod(parent);    // this one should be NOT FAILABLE.
+     registerMethodsWithParent(parent);    // this one should be NOT FAILABLE.
                                 // here we register events, when we know that 
                                 // there will be no failure during initialization of library.
                                 // but if we throw???
@@ -69,30 +68,25 @@ public class BasicLibrary  extends AbstractLibraryBase // the AbstractBase just 
    * Contract:
    *  Loads helpers or throws.
    * can it throw?
-   * @throws ?? what does it throw?
+   * @throws TwitterDirectorEx in case error initializing twitterDirector. And MAYBE(?) some other exceptions?
    */
-  private final void initLibrary(PApplet parent)
+  private final void initLibrary(PApplet parent) throws TweetDirectorEx
   {
-    
-    
-    
-    
     // *** init all our convenience objects ***
     fontBoss = new FontBoss(parent);
     libraryDrawing = new LibraryDrawing(parent, fontBoss); // what does this library do : draws lines and shit and framerate
-    menu = new Menu(parent);
+    menu = new Menu(parent, libraryDrawing);
     keyManager = new KeyManager(parent); // ?? should it get this parameter?
     mouseManager = new MouseManager(parent);
-    tweetDirector = new TweetDirector(parent, mLibConfig.getTwitterConfiguration() );           // can throw if twitterConfiguration is NULL
+    
+    tweetDirector = new TweetDirector(parent, mLibConfig.getTwitterConfiguration() );  // can throw TwitterDirectorEx
+                                                                                       //if twitterConfiguration is NULL
     
     // so if we got here - we have start.
     tweetDirector.start(); // starts the background tweeting thread (may it be necessary). 
     
     //  once we get to here, it means there were no errors in the failables from above.
       // we only register ourselves in case there was failre from the classes above (all failables first).
-    
-    
-
   }
   
 
@@ -104,9 +98,9 @@ public class BasicLibrary  extends AbstractLibraryBase // the AbstractBase just 
   private void displayInitStatus()
   {
      println("Started the library");
-     println("Font loaded is: " + mFont.toString());
-     println("Configuration origin: " +  mLibConfig.getXmlOriginComment());
+     println("Font loaded is: " + fontBoss.toString());
      println("Loaded config: " + mLibConfig.toString());
+     //TODO: add other helper statuses.
   }
 
 
@@ -118,9 +112,9 @@ public class BasicLibrary  extends AbstractLibraryBase // the AbstractBase just 
     parent.registerMethod("dispose", this);
     parent.registerMethod("pre", this);
     parent.registerMethod("draw", this);
-    parent.registerMethod("post", this);
+    parent.registerMethod("post", this);         // maybe we don't need this as it's not run
     
-    parent.regsiterMethod("keyEvent", this);    // should they be camel case?
+    parent.registerMethod("keyEvent", this);    // should they be camel case?
     parent.registerMethod("mouseEvent", this);  // should they be camel case?
     
     
@@ -166,7 +160,7 @@ public class BasicLibrary  extends AbstractLibraryBase // the AbstractBase just 
    */
   public void pre(){
     
-    libdrawing.drawRedRectangle80();
+    libraryDrawing.drawRedRectangle80();
   }
   
   /**
@@ -174,34 +168,37 @@ public class BasicLibrary  extends AbstractLibraryBase // the AbstractBase just 
    * From this method it is possible to draw (remember to draw through the "parent".
    */
   public void draw(){
-    screenshotManager.allocateMemoryIfNotAllocatedFor(parent.g); // just makes sure that screenshot can work
+    screenshotManager.allocateMemoryIfNotAllocatedFor(mParent.g); // just makes sure that screenshot can work
     
-    if ( menu.isOpenedFlag() ){
+    if ( menu.isDisplayedFlag() ){
        // *************** DISPLAY MENU *********************
       menu.draw();
       // here we handle keyboard whilst menu opened
-      if ( keyman.pressedMenuExitKey() ){
-        setMenuOpened(false);
+      if ( keyManager.pressedMenuExitKey() ){
+        menu.setDisplayedFlag(false);
       }
-      else if ( keyman.pressedTweetKey() ){
+      else if ( keyManager.pressedTweetKey() ){
+        PImage picture = screenshotManager.getScreenShotOriginalSize();
         tweetDirector.tweetTheMessage("my processing sketch draws cool things ", picture);
-        menu.setOpenedFlag(false);
+        menu.setDisplayedFlag(false);
       }
     }
     else{
       // *************** REGULAR SKETCH RUNNING HANDLING *********************
       // here we handle keyboard whilst menu closed
-      if ( keyman.pressedMenuOpenKey() ){
-         screenshotManager.saveImageFrom(parent.g); // saves to some storage
-         menu.setOpenedFlag(true);
+      if ( keyManager.pressedMenuOpenKey() ){
+         screenshotManager.saveImageFrom(mParent.g); // saves to some storage
+         menu.setDisplayedFlag(true);
       }
     }
     
     
     // ************** STANDARD OVERLAYS **************************
-    libdrawing.drawLineGrid();
-    libdrawing.displayFrameRate();
-    libdrawing.displayStringLog( tweetDirector.getLogStrings() );
+    libraryDrawing.drawLineGrid();
+    libraryDrawing.displayFrameRate();
+    libraryDrawing.displayStringLog( tweetDirector.getLogObject() , C_STRING_LOG_X, C_STRING_LOG_Y );
+    
+
   }
   
   /**
