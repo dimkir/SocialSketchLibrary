@@ -3,9 +3,17 @@
  */
 class MouseManager extends AbstractLibraryHelper
 {
-  ??
-  
+   
+   private Queue<MouseEvent> mMouseEventQueue = new LinkedList<MouseEvent>();
+   
+    
+   /**
+    * These may be happening also between the animation thread, 
+    * because even capturing is happening also between the threads.
+    */
    void mouseEvent(MouseEvent evt){
-      ??? manage the event
+       // actually i want to save the event.
+      mMouseEventQueue.add(evt);
    }
+   
 }
