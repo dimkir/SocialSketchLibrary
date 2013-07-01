@@ -1,5 +1,10 @@
-import java.util.Thread;
+package libraryexample;
+import java.lang.Thread;
 import java.util.Map;
+import java.util.Queue;
+import java.util.LinkedList;
+import libraryexample.TweetDirector.TweetDirectorGate;
+import processing.core.*;
 /**
  * This is the thread where TweetDirector work is going
  * to happen. (Oauth authenticatin and sending tweets if necesary)
@@ -36,6 +41,10 @@ class TweetThread extends Thread
    */
   private boolean mIsRunning = false;
   
+  /**
+   * Has status of whether we already initialized or not.
+   */
+  private boolean mIsInitialized = false;
   
   /**
    * Passes TDG for if we want to communicate
@@ -48,7 +57,8 @@ class TweetThread extends Thread
   /**
    * This is where the action is going to happen.
    */
-  void run(){
+  @Override
+  public void run(){
     //TODO: what happens to the thread if initialization was blown???
     // and we didn't get? should we continue looping? 
     
@@ -60,10 +70,10 @@ class TweetThread extends Thread
     // that we are not gonna authenticate... :S
     while ( getRunning() ){
         sleep(100);
-        if ( !isInitialized ){
+        if ( !isInitialized() ){
            init();
         }
-        if ( isInitializationSuccessful() {
+        if ( isInitializationSuccessful() ) {
             iterate(); // perform what we have to perform
         }
         else{
@@ -82,16 +92,16 @@ class TweetThread extends Thread
    * 
    * @returns NULL in case there's no results.
    */
-  ResultRecord synchronized pollResultRecord(){
-      return mResultRecordQueue.pop(); 
+  synchronized ResultRecord  pollResultRecord(){
+      return mResultRecordQueue.poll();  // Retrieves and removes the head of this queue, or returns null if this queue is empty.
   }
   
   
   /**
    * Pushes result record to the result queu.
    */
-  private void synchronized pushResultRecord(ResultRecord rr){
-    mResultRecordQueue.push(rr);
+  synchronized private void pushResultRecord(ResultRecord rr){
+    mResultRecordQueue.add(rr);
   }
   
   
@@ -103,9 +113,11 @@ class TweetThread extends Thread
    * 
    */
   private void init(){
-       perform authentication.
-       try to connect to the 
-       
+       // let's get initialization params;
+       // perform authentication.
+       //try to connect to the 
+       println("TweetThread::init(): performing authentication");
+       mIsInitialized = true;
   }
   
   
@@ -116,9 +128,17 @@ class TweetThread extends Thread
    *             or in case there was failure initializing. (that's a good question)
    */
   private boolean isInitialized(){
-     
+     return mIsInitialized;
   }
   
+  
+  /**
+   * returns whether initialization was successful
+   */
+  private boolean isInitializationSuccessful(){
+     //TODO: here there's stub which just returns shite.
+     return true;
+  }
   
   /**
    *  Submit to message queue. (Wraps message in MesssageRecord
@@ -128,9 +148,9 @@ class TweetThread extends Thread
    * It is synchronized because we 
    * 
    */
-  void synchronized submitMessage(String msg, PImage img){
+  synchronized void submitMessage(String msg, PImage img){
       MessageRecord mr = new MessageRecord(msg, img);
-      mMessageRecordQueue.push(mr);
+      mMessageRecordQueue.add(mr);
   }
   
   
@@ -138,11 +158,12 @@ class TweetThread extends Thread
    *  Pops message from queue.
    *  @returns NULL if message queue is empty
    */
-  private MessageRecord synchronized popMessage(){
+  synchronized private MessageRecord popMessage(){
     if ( mMessageRecordQueue.isEmpty() ){
        return null;
     }
-    return mMessageRecordQueue.pop();
+    return mMessageRecordQueue.poll();  // poll() returns null if
+                                        // queue is empty
   }
   
   
@@ -153,15 +174,24 @@ class TweetThread extends Thread
   private void iterate(){
       // poll tweet queue
       MessageRecord mr = popMessage(); // here we can check if messages are avaialble.
+     
+      //TODO: this is just dummy stub. need to implement error checking and other things.
       
-      ?? = tweetMessageBlocking(mr); // performs this
-      // ? what can it return?? again there may be different reasons for 
-      // not being able to perform the thing... 
-      // like connection error or smth.
-      // add succees to the queue of successes
-      if ( ??? 
-      
-      pushResultRecord(
+      if ( mr != null){
+         // TODO: need to add return value to this method.
+         tweetMessageBlocking(mr);
+      }
+      else{
+         println("TweetThread::iterate(): no messages in queue");
+      }
+//      ?? = tweetMessageBlocking(mr); // performs this
+//      // ? what can it return?? again there may be different reasons for 
+//      // not being able to perform the thing... 
+//      // like connection error or smth.
+//      // add succees to the queue of successes
+//      if ( ??? 
+//      
+//      pushResultRecord(
 
       
   }
@@ -172,8 +202,7 @@ class TweetThread extends Thread
    * @return ?? should return some success status? no?
    */
   void tweetMessageBlocking(MessageRecord mr){
-     ???
-    
+     println("TweetThread::tweetMessageBlocking(): " + mr.msg + " image:" + mr.img.toString());
   }
   
   
@@ -184,8 +213,8 @@ class TweetThread extends Thread
     try{
       Thread.sleep(milliseconds);
     }
-    catch( OnInterruptedException intex){
-       println("Interrupted exception has happened");
+    catch( InterruptedException intex){
+       println("Interrupted exception has happened: " + intex.getMessage());
     }
   }
   
@@ -194,13 +223,20 @@ class TweetThread extends Thread
    * which is returning whether the thread should continue
    * running or not.
    */
-  void synchronized boolean setRunning(boolean running){
+  synchronized void setRunning(boolean running){
      mIsRunning = running;
   }
   
   
-  void synchronized boolean getRunning(){
+  synchronized boolean getRunning(){
      return mIsRunning;
+  }
+  
+  /**
+   * Fluentizer.
+   */
+  private void println(String s ){
+     mTweetDirectorGate.println(s);
   }
   
   
@@ -211,15 +247,23 @@ class TweetThread extends Thread
   {
     
     String msg;
-    PImage image;
+    PImage img;
     
     /**
      * 
      */
-    MessageRecord(String s, PImage img){
+    MessageRecord(String s, PImage vImg){
        msg = s;
-       image = img;
+       img = vImg;
     }
+  }
+  
+  /**
+   * This is wrapper for the results being returned
+   * from TweetThread.
+   */
+  class ResultRecord
+  {
   }
   
 }
