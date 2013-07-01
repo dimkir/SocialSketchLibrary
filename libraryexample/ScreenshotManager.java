@@ -1,3 +1,5 @@
+package libraryexample;
+import processing.core.*;
 /**
  * Just encapsulates saving of the current screen of the sketch. (So that we can tweet it later).
  * What's the behaviour? How to handle errors? Can we recover from errors? 
@@ -25,7 +27,7 @@ class ScreenshotManager extends AbstractLibraryHelper
    * we only can be sure of the size of screen when first frame is drawn (not when sketch is setup)
    */
   private void allocateMemoryFor(int width, int height){
-      mScreenshot = parent.createImage(width, height, C_IMAGE_COLOR_MODE); 
+      mScreenshot = mParent.createImage(width, height, C_IMAGE_COLOR_MODE); 
   }
   
   void allocateMemoryFor(PGraphics pg){
@@ -36,7 +38,7 @@ class ScreenshotManager extends AbstractLibraryHelper
    * Allocates memory if it is not yet allocated. This is a convenience method, can be called from each draw.
    * It only allocates memory if PImage is null.
    */
-  void allocateMemoryIfNotAllocated(PGraphics pg){
+  void allocateMemoryIfNotAllocatedFor(PGraphics pg){
     if ( mScreenshot == null ){
        allocateMemoryFor(pg);
     }
@@ -47,8 +49,9 @@ class ScreenshotManager extends AbstractLibraryHelper
    * Saves image from graphics surface (what sketch has drawn)
    */
   void saveImageFrom(PImage imageOrGraphicsSurfaceWhichToSave){
+     PImage img  = imageOrGraphicsSurfaceWhichToSave;
      assertDimensionsSame(mScreenshot, img);
-     mScreenshot.copy(img, 0, 0, img.width ,img.height); // ? what happens if the dimensions are wrong?
+     mScreenshot.copy(img, 0, 0, img.width ,img.height, 0, 0, img.width, img.height); // ? what happens if the dimensions are wrong?
      // now we kinda need to shrink it as well??
      // or do we shrink it at first request??
   }
