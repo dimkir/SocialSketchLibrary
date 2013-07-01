@@ -50,31 +50,43 @@ public class BasicLibrary  extends AbstractLibraryBase // the AbstractBase just 
      
      initLibrary(); // here we properly init library and print the status.
      
-     registerMethod(parent);   
+     // if we're here, that means that background thread is running. We need to register "stop()" so that 
+     // we stop that thread on exit
+     registerMethod(parent);    // this one should be NOT FAILABLE.
+                                // here we register events, when we know that 
+                                // there will be no failure during initialization of library.
+                                // but if we throw???
+                                // if we throw - doesn't matter: we throw and crash and burn.??? (what if we dynamically load library?)
+                                // not in this scenario? (actually here we load libraries in the sketch in setup(), so technically
+                                // we may want to proceed loading even if the library has failed.
      displayInitStatus();
   }
 
   
   
   /**
-   *  This is init code, but which may be called from different constructors.
-   * Registers events, prints start status message, loads fonts. (maybe allocates something?)
+   * Failable: Initializes all the "helpers" (like FontBoss and TweetDirector). Launches thread for TweetDirector.
    * Contract:
-   *  ??? can it crash??? or fail to load?
+   *  Loads helpers or throws.
+   * can it throw?
+   * @throws ?? what does it throw?
    */
-  private final void initLibrary(PApplet parent){
+  private final void initLibrary(PApplet parent)
+  {
     
     
     
     
     // *** init all our convenience objects ***
     fontBoss = new FontBoss(parent);
-    libraryDrawing = new LibraryDrawing(parent); // what does this library do?
+    libraryDrawing = new LibraryDrawing(parent, fontBoss); // what does this library do : draws lines and shit and framerate
     menu = new Menu(parent);
     keyManager = new KeyManager(parent); // ?? should it get this parameter?
     mouseManager = new MouseManager(parent);
-    tweetDirector = new TweetDirector(parent, mLibConfig.getTwitterConfiguration() );
-    tweetDirector.start(); // starts the background tweeting thread (may it be necessary).
+    tweetDirector = new TweetDirector(parent, mLibConfig.getTwitterConfiguration() );           // can throw if twitterConfiguration is NULL
+    
+    // so if we got here - we have start.
+    tweetDirector.start(); // starts the background tweeting thread (may it be necessary). 
     
     //  once we get to here, it means there were no errors in the failables from above.
       // we only register ourselves in case there was failre from the classes above (all failables first).
