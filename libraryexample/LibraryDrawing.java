@@ -16,6 +16,8 @@ class LibraryDrawing extends AbstractLibraryHelper
   
   
   private FontBoss mFontBoss;
+  
+  
   LibraryDrawing(PApplet p, FontBoss fboss){
      super(p);
      mFontBoss = fboss;
@@ -39,10 +41,10 @@ class LibraryDrawing extends AbstractLibraryHelper
      
      // fill(#FF0000) 
      //               becomes  
-     parent.fill(0xFFFF0000);
+     parent().fill(0xFFFF0000);
      //          ^^^^ note that '0xFF' has replaced the '#' character
      //          also remember that there will be in total 4 pairs of two letters 0xFF FF 00 00
-     parent.rect(x0, y0, newWidth, newHeight);
+     parent().rect(x0, y0, newWidth, newHeight);
   }
   
   
@@ -52,8 +54,8 @@ class LibraryDrawing extends AbstractLibraryHelper
     int lineY = 0;
     int lineStep = 20;
     while ( lineY < parent.height ){
-      parent.line(0, lineY, 
-                   parent.width, lineY);
+      parent().line(0, lineY, 
+                   parent().width, lineY);
       lineY += lineStep;
                      
     }
