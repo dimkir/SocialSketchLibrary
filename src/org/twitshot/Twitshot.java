@@ -3,9 +3,9 @@ import processing.core.*;
 import processing.event.*;
 
 /**
- * TWITSHOT (TODO: to change package and classname to this package
  * This is main class of library which allows to take screenshots
- * of your sketches and tweet them
+ * of your Processing sketches and tweet them to your preconfigured account.
+ * This should be compiled for Java 1.6 format (-source 1.6)
  */
 public class Twitshot  extends AbstractLibraryBase // the AbstractBase just holds some basic methods like prinltn() and other convenience methods. As well as protected field .parent)
 {
