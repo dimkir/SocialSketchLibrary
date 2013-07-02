@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.twitshot;
 
 import org.twitshot.FixedStringLog;
@@ -9,7 +5,7 @@ import static junit.framework.Assert.assertEquals;
 import junit.framework.TestCase;
 
 /**
- *
+ * This is sample test suite for class FixedStringLogTest.
  * @author Dimitry Alhambra <dimitry@languagekings.com>
  */
 public class FixedStringLogTest extends TestCase {
