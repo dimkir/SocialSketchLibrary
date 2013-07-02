@@ -10,10 +10,19 @@ class FixedStringLog
 {
   private String[] mStringar;
   /**
-   * The way we're going to operate - is that we're going to add new itemns
+   * The way we're going to operate - is that we're going to add new items
    * and they will be overwriting the old ones.
    */
-  private int mPointer;
+  
+  /**
+   * @var mPointer initial value is 0 ?
+   * what are we pointing to? This is pointing to the HEAD of the sequence.
+   */
+  private int mHeadPointer;
+  
+  /**
+   * @var mLength this is value of how many items are now in the array.
+   */
   private int mLength;
   
     
@@ -24,7 +33,7 @@ class FixedStringLog
    */
   FixedStringLog(int maxSize){
      mStringar = new String[maxSize];
-     mPointer = 0;
+     mHeadPointer = 0;
      mLength = 0;
   }
     
@@ -50,11 +59,18 @@ class FixedStringLog
    * @throws IllegalArgumetnException if value is not correcgt
    */
   String get(int i){
-    if ( i > lastIndex() || i < 0  ){
+    if ( i < 0 ){
+        throw new IllegalArgumentException("Index cannot be negative");
+    }
+    if ( mLength < 1 ){
+        throw new IllegalStateException("FixedStringLog is empty, nothign to fetch");
+    }
+    
+    if ( i > lastIndex() ){
        throw new IllegalArgumentException("Index should be between 0 and " + lastIndex() + " supplied:" + i );
     }
     
-    int index = mPointer + i;
+    int index = mHeadPointer + i;
     index %= mStringar.length; // we wrap the value if it is around the array
     return mStringar[index]; 
      
@@ -66,15 +82,18 @@ class FixedStringLog
    */
   void put(String s){
        // get next pointer
-       int nextPointer = mPointer + mLength;
+       assert(mLength <= mStringar.length);
+       
+       int nextPointer = mHeadPointer + mLength;  // can point to itself, to the right or to the left.
        nextPointer %= mStringar.length;
        
-       if ( nextPointer == mPointer){
-          mPointer++; // we will overwrite the oldest on the next step
+       // this should happen only if we're not zero.
+       if ( mLength == mStringar.length){
+          mHeadPointer++; // we will overwrite the oldest on the next step
        }
        //
        mStringar[nextPointer] = s;
-       if ( mLength < mStringar.length ){
+       if ( mLength < mStringar.length  ){
           mLength++;
        }
   }
