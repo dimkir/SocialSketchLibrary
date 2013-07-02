@@ -78,5 +78,24 @@ class FixedStringLog
           mLength++;
        }
   }
+
+    /**
+     * This outputs status and contents of the FSL
+     * @return 
+     */
+    @Override
+    public String toString() {
+        
+        StringBuilder sb = new StringBuilder();
+        sb.append("Size(): " + size());
+        for(int i = 0 ; i < size(); i++){
+             sb.append("(" + i + "): "  + get(i));
+        }
+        return sb.toString();
+        
+    }
+  
+  
+  
   
 }
