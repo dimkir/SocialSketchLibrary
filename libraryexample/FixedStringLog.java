@@ -32,7 +32,7 @@ class FixedStringLog
      return mLength;
   }
   
-  int maxSize(){
+  int capacity(){
      return mStringar.length;
   }
   
