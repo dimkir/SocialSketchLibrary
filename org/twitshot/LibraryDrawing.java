@@ -1,4 +1,4 @@
-package libraryexample;
+package org.twitshot;
 import processing.core.*;
 /**
  * Encapsulates library drawing effects 

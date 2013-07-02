@@ -1,4 +1,4 @@
-package libraryexample;
+package org.twitshot;
 /**
  * This is exception thrown by TweetDirector.
  */

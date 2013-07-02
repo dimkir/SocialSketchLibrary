@@ -1,4 +1,4 @@
-package libraryexample;
+package org.twitshot;
 import processing.core.*;
 /**
  *  Just fancy name class which encapsulates operations with fonts.

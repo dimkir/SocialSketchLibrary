@@ -1,4 +1,4 @@
-package libraryexample;
+package org.twitshot;
 // import some twitter library here.
 
 import java.util.Map;

@@ -1,4 +1,4 @@
-package libraryexample;
+package org.twitshot;
 import processing.core.*;
 /**
  *  Is thrown if there's error when LibConfig is loading.

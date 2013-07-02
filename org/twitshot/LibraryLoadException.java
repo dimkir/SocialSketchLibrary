@@ -1,4 +1,4 @@
-package libraryexample;
+package org.twitshot;
 /**
  * Base exception for the library
  */

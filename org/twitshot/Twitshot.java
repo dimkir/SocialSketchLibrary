@@ -1,4 +1,4 @@
-package libraryexample;
+package org.twitshot;
 import processing.core.*;
 import processing.event.*;
 
@@ -7,7 +7,7 @@ import processing.event.*;
  * This is main class of library which allows to take screenshots
  * of your sketches and tweet them
  */
-public class BasicLibrary  extends AbstractLibraryBase // the AbstractBase just holds some basic methods like prinltn() and other convenience methods. As well as protected field .parent)
+public class Twitshot  extends AbstractLibraryBase // the AbstractBase just holds some basic methods like prinltn() and other convenience methods. As well as protected field .parent)
 {
 
   /**
@@ -40,7 +40,7 @@ public class BasicLibrary  extends AbstractLibraryBase // the AbstractBase just 
    * In case there was a failure loading: 
    * @throws LibraryLoadException()
    */
-  public BasicLibrary(PApplet parent, String xmlConfigFile) throws LibraryLoadException
+  public Twitshot(PApplet parent, String xmlConfigFile) throws LibraryLoadException
   {
      super(parent);
       // we first want to try to load file. Because if this fails - 

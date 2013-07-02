@@ -1,9 +1,9 @@
-package libraryexample;
+package org.twitshot;
 import java.lang.Thread;
 import java.util.Map;
 import java.util.Queue;
 import java.util.LinkedList;
-import libraryexample.TweetDirector.TweetDirectorGate;
+import org.twitshot.TweetDirector.TweetDirectorGate;
 import processing.core.*;
 /**
  * This is the thread where TweetDirector work is going

@@ -1,4 +1,4 @@
-package libraryexample;
+package org.twitshot;
 import processing.core.*;
 /**
  * Just encapsulates saving of the current screen of the sketch. (So that we can tweet it later).

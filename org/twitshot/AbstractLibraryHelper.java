@@ -1,4 +1,4 @@
-package libraryexample;
+package org.twitshot;
 import processing.core.*;
 /**
  * This is just abstract superclass which all library-helpers are inheriting.

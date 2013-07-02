@@ -1,4 +1,4 @@
-package libraryexample;
+package org.twitshot;
 /**
  * Implements concept of FixedStringLog (log of last N String messages)
  * 
