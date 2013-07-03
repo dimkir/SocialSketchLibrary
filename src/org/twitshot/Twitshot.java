@@ -6,6 +6,9 @@ import processing.event.*;
  * This is main class of library which allows to take screenshots
  * of your Processing sketches and tweet them to your preconfigured account.
  * This should be compiled for Java 1.6 format (-source 1.6)
+ * 
+ * TODO: how is this going to work if renderer is P2D or P3D???? 
+ * we use operations like text() and image() in this library?
  */
 public class Twitshot  extends AbstractLibraryBase // the AbstractBase just holds some basic methods like prinltn() and other convenience methods. As well as protected field .parent)
 {
@@ -38,15 +41,26 @@ public class Twitshot  extends AbstractLibraryBase // the AbstractBase just hold
   /**
    * Inits library and loads twitter credentials from the xmlConfigFile {@link xmlConfigFileSpec}.
    * In case there was a failure loading: 
+   * @param xmlConfigFile if NULL then config file path is read form the environment.
    * @throws LibraryLoadException()
    */
   public Twitshot(PApplet parent, String xmlConfigFile) throws LibraryLoadException
   {
      super(parent);
+     
+     if ( xmlConfigFile == null ){
+         parent.println("Twitshot::Twitshot() WARNING: your environment variable " + LibConfig.C_ENVIRONMENT_VARIABLE_NAME + 
+                     "should contain path to xml with twitter credentials.");
+     }
+     
+     if ( xmlConfigFile == null){
+         mLibConfig = new LibConfig(parent);
+     }
+     else{
       // we first want to try to load file. Because if this fails - 
      // we then shouldn't proceed with method registration and further initialization.
-     mLibConfig = new LibConfig(parent, xmlConfigFile); // throws ConfigParsingException::LibraryLoadException
-     
+        mLibConfig = new LibConfig(parent, xmlConfigFile); // throws ConfigParsingException::LibraryLoadException
+     }
      initLibrary(parent); // here we properly init library and print the status.
      
      // if we're here, that means that background thread is running. We need to register "stop()" so that 
@@ -61,7 +75,13 @@ public class Twitshot  extends AbstractLibraryBase // the AbstractBase just hold
      displayInitStatus();
   }
 
-  
+  /**
+   * Initializes Twitshot trying to take Twitter Credentials from environment variable.
+   * @param parent 
+   */
+  public Twitshot(PApplet parent) throws LibraryLoadException{
+      this(parent, null);
+  }
   
   /**
    * Failable: Initializes all the "helpers" (like FontBoss and TweetDirector). Launches thread for TweetDirector.
@@ -70,15 +90,15 @@ public class Twitshot  extends AbstractLibraryBase // the AbstractBase just hold
    * can it throw?
    * @throws TwitterDirectorEx in case error initializing twitterDirector. And MAYBE(?) some other exceptions?
    */
-  private final void initLibrary(PApplet parent) throws TweetDirectorEx
+  private final void initLibrary(PApplet parent) throws LibraryLoadException
   {
     // *** init all our convenience objects ***
     fontBoss = new FontBoss(parent);
     libraryDrawing = new LibraryDrawing(parent, fontBoss); // what does this library do : draws lines and shit and framerate
-    menu = new Menu(parent, libraryDrawing);
+    menu = new Menu(parent, libraryDrawing, fontBoss);
     keyManager = new KeyManager(parent); // ?? should it get this parameter?
     mouseManager = new MouseManager(parent);
-    
+    screenshotManager = new ScreenshotManager(parent);
     tweetDirector = new TweetDirector(parent, mLibConfig.getTwitterConfiguration() );  // can throw TwitterDirectorEx
                                                                                        //if twitterConfiguration is NULL
     
@@ -178,7 +198,7 @@ public class Twitshot  extends AbstractLibraryBase // the AbstractBase just hold
         menu.setDisplayedFlag(false);
       }
       else if ( keyManager.pressedTweetKey() ){
-        PImage picture = screenshotManager.getScreenShotOriginalSize();
+        PImage picture = screenshotManager.getOriginalSize();
         tweetDirector.tweetTheMessage("my processing sketch draws cool things ", picture);
         menu.setDisplayedFlag(false);
       }
@@ -188,6 +208,12 @@ public class Twitshot  extends AbstractLibraryBase // the AbstractBase just hold
       // here we handle keyboard whilst menu closed
       if ( keyManager.pressedMenuOpenKey() ){
          screenshotManager.saveImageFrom(mParent.g); // saves to some storage
+         menu.setImageToDisplay(screenshotManager.getThumbnailSize()); // this is temporary method
+                                                                        // here we just assign to menu
+                                                                        // the picture. And menu will 
+                                                                        // try to display it.
+                                                                        // we basically here just want
+                                                                        // to test saving/restoring images.
          menu.setDisplayedFlag(true);
       }
     }
