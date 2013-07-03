@@ -28,10 +28,13 @@ class LibConfig extends AbstractLibraryHelper
 
   /**
    * This is name of environment variable which holds the path to the default
-   * config xml file. This environment variable is used in case there's no 
+   * config xml file. 
+   * I made it public, so that I can query it in other methods to give
+   * information to users or warning.s
+   * This environment variable is used in case there's no 
    * config xml specified when instantiating LibConfig.
    */
-  private static final String C_ENVIRONMENT_VARIABLE_NAME = "PROCESSING_TWITSHOT_CONFIGXML";
+  public static final String C_ENVIRONMENT_VARIABLE_NAME = "PROCESSING_TWITSHOT_CONFIGXML";
   
   
   private Map<String, String> mMap = new HashMap<String, String>();
@@ -39,7 +42,8 @@ class LibConfig extends AbstractLibraryHelper
   
   
   /**
-   * This is default constructor, which uses environment variable {@link C_ENVIRONMENT_VARIABLE_NAME} 
+   * This is default constructor, 
+   * which USES ENVIRONMENT VARIABLE {@code C_ENVIRONMENT_VARIABLE_NAME} 
    * to retrieve path to the default constructor.
    */
   LibConfig(PApplet papp) throws ConfigParsingException
@@ -54,6 +58,10 @@ class LibConfig extends AbstractLibraryHelper
    * Loads configuration from the xml file. After successful run of this method,
    * this instance will contain all the necessary configuration variables.
    * This is failable
+   * @param papp 
+   * @param xmlFilename VALID filename. NULL NOT ALLOWED. If want to use configuration
+   *        from envrionment variable #C_ENVIRONMENT_VARIABLE then call #LibConfig(PApplet p);
+   *        
    * @throws ConfigParsingException (LibraryLoadException)
    */
   LibConfig(PApplet papp, String xmlFilename) throws ConfigParsingException
