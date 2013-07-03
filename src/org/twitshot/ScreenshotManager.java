@@ -10,7 +10,8 @@ import processing.core.*;
 class ScreenshotManager extends AbstractLibraryHelper
 {
   private PImage mScreenshot;  // this needs to be created at the first drawing loop. As when library is called the size of screen may not be known yet.
-  private final int C_IMAGE_COLOR_MODE =  PApplet.RGB; // PApplet.ARGB; because screen is not image, it has no opacity! (Sure, what are you to see if the screen is transparent? wall behind screen?)
+  private PImage mThumbnailImage; // ??? this is screenshot half size.
+  private final int C_IMAGE_COLOR_MODE =  PApplet.ARGB; // PApplet.ARGB; because screen is not image, it has no opacity! (Sure, what are you to see if the screen is transparent? wall behind screen?)
   
   /**
    * We just create object, but no memory yet is allocated for image.
@@ -28,9 +29,10 @@ class ScreenshotManager extends AbstractLibraryHelper
    */
   private void allocateMemoryFor(int width, int height){
       mScreenshot = mParent.createImage(width, height, C_IMAGE_COLOR_MODE); 
+      mThumbnailImage = mParent.createImage(width/2, height/2, C_IMAGE_COLOR_MODE);
   }
   
-  void allocateMemoryFor(PGraphics pg){
+  private void allocateMemoryFor(PGraphics pg){
     allocateMemoryFor(pg.width, pg.height);
   }
   
@@ -44,14 +46,15 @@ class ScreenshotManager extends AbstractLibraryHelper
     }
   }
   
-
   /**
    * Saves image from graphics surface (what sketch has drawn)
    */
   void saveImageFrom(PImage imageOrGraphicsSurfaceWhichToSave){
      PImage img  = imageOrGraphicsSurfaceWhichToSave;
-     assertDimensionsSame(mScreenshot, img);
+     assertDimensionsSame(mScreenshot, img);        // is it throwing anything?
      mScreenshot.copy(img, 0, 0, img.width ,img.height, 0, 0, img.width, img.height); // ? what happens if the dimensions are wrong?
+     copyToThumbnail();
+     println("Saved screen shot to screenshot manager");
      // now we kinda need to shrink it as well??
      // or do we shrink it at first request??
   }
@@ -60,8 +63,16 @@ class ScreenshotManager extends AbstractLibraryHelper
    * Gets original size screenshot. 
    * There should be a method to retrive the "shrunk" size of the screenshot. (may we need it for displaying).
    */
-  PImage getScreenShotOriginalSize(){
+  PImage getOriginalSize(){
     return mScreenshot;
+  }
+  
+  /**
+   * Returns "thumbnail" version of the image.
+   * @return 
+   */
+  PImage getThumbnailSize(){
+      return mThumbnailImage;
   }
   
   /**
@@ -86,6 +97,17 @@ class ScreenshotManager extends AbstractLibraryHelper
     
     // if were're here - all ok
   }
+
+    /**
+     * Makes copy of the image from #mScreenShot into #mScreenshotHalfSize
+     * they should be already initializes. The dimensions for thumbnail
+     * are already there (as it is initialized).
+     * 
+     */
+    private void copyToThumbnail() {
+        mThumbnailImage.copy(mScreenshot, 0, 0, mScreenshot.width, mScreenshot.height,
+                                              0, 0, mThumbnailImage.width, mThumbnailImage.height);
+    }
   
   
  
