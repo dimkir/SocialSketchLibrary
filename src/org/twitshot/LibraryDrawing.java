@@ -96,6 +96,17 @@ class LibraryDrawing extends AbstractLibraryHelper
   }
   
   /**
+   * Draws image. We want to simplify dependencies, and thus we 
+   * redirect operations here.
+   * @param img
+   * @param xx
+   * @param yy 
+   */
+  void image(PImage img, float xx, float yy){
+      parent().image(img, xx, yy);
+  }
+  
+  /**
    *  Fluentizer, to make it simplier.
    */
   private void text(String s, float xx, float yy){
