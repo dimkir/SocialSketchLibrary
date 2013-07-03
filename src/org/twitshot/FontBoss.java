@@ -12,7 +12,7 @@ class FontBoss extends AbstractLibraryHelper
 //  private static final String C_FONT_PATH_WITHIN_JAR = "/fonts/commando.ttf";
 //  private static final String C_FONT_PATH_WITHIN_JAR = "/fonts/28 Days Later.ttf";
   // new PFont(InputStream) only works with VLW fonts.
-  private static final String C_FONT_PATH_WITHIN_JAR = "/fonts/Commando-32.vlw";
+  private static final String C_FONT_PATH_WITHIN_JAR = "/res/fonts/Commando-32.vlw";
   private static final String C_DEFAULT_FONT_NAME = "Arial"; // incuim createFont() param
   private static final int    C_DEFAULT_FONT_SIZE = 32;      // incuim createFont() param  
   private PFont mFont; // the library inits PFont to use. So far default is createFont() from "Arial" but we need to supply our own font.  
@@ -26,7 +26,7 @@ class FontBoss extends AbstractLibraryHelper
    */
   FontBoss(PApplet papp) throws FontLoadEx{
      super(papp);
-     testReadingFileFromResources("/strings/angelina.xml");
+     testReadingFileFromResources("/res/strings/angelina.xml");
      initFont();
   }
   
