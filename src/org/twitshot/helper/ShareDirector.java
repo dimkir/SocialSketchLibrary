@@ -95,7 +95,7 @@ public class ShareDirector extends AbstractLibraryHelper
      */
     public void start(){
         // i probably should pass some parametes to the thread???
-        mTweetThread = new MessageShareThread(new ShareDirectorParamsForThread(this));
+        mTweetThread = new MessageShareThread(new ShareDirectorParamsForThread(this, new BlockingTweetMsgSharer(getLogger())));
         mTweetThread.start();
     }
       
