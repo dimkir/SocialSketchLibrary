@@ -3,20 +3,21 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import org.twitshot.utils.ConsoleLogger;
+import org.twitshot.utils.ILogging;
 import processing.core.*;
 /**
  * This is just abstract superclass which all library-helpers are inheriting.
  * Incuim it only obligates to implements toString();
  */
-abstract class AbstractLibraryHelper// extends AbstractLibraryBase // incuim the base only saves .parent and defines println()
+abstract class AbstractLibraryHelper
 {
   private PApplet mParent; 
-   
+  private ILogging mLogger;
   
   AbstractLibraryHelper(PApplet parent){
-    //super(parent);
-    
-     //mParent = parent;
+      mParent = parent;
+      mLogger = new ConsoleLogger(mParent);
   }
   
   protected PApplet sketch(){
@@ -58,7 +59,7 @@ abstract class AbstractLibraryHelper// extends AbstractLibraryBase // incuim the
    * Assumes this.parent is set in the current implementation.
    */
   protected void println(String s){
-     mParent.println(s);
+      mLogger.println(s);
   }     
  
 }
