@@ -1,5 +1,6 @@
 package org.twitshot;
 
+import org.twitshot.thread.TweetThread;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import junit.framework.TestCase;
@@ -16,11 +17,11 @@ public class TweetThreadTest extends TestCase {
      * @var mTwDirectorGate this is point through which Thread is communicating 
      * with the outside.
      */
-    ITweetDirectorGate mTwDirectorGate;
+    FakeTweetDirectorGate mStubTwDirectorGate;
     
     public TweetThreadTest(String testName) {
         super(testName);
-        mTwDirectorGate = new FakeTweetDirectorGate();
+        mStubTwDirectorGate = new FakeTweetDirectorGate();
     }
     
     @Override
@@ -39,7 +40,8 @@ public class TweetThreadTest extends TestCase {
      */
     public void testInitialize(){
         
-        TweetThread tt = new TweetThread(mTwDirectorGate);
+        mStubTwDirectorGate.setCredentials(FakeTweetDirectorGate.VALID);
+        TweetThread tt = new TweetThread(mStubTwDirectorGate);
         
         tt.start();
         
@@ -54,6 +56,40 @@ public class TweetThreadTest extends TestCase {
         
     }
 
+    
+   public void testNullCredentials(){
+            mStubTwDirectorGate.setCredentials(FakeTweetDirectorGate.NULLL);       
+            
+            
+            ???
+   }
+    
+
+    /**
+     * Test what happens if invalid credentials are supplied.
+     */
+    public void testInvalidCredentials(){
+        mStubTwDirectorGate.setCredentials(FakeTweetDirectorGate.INVALID);  
+    }   
+   
+   /**
+    * ?
+    */
+   public void testNoInternetConnection(){
+       
+   }
+    
+    
+
+    
+    
+    /**
+     * 
+     */
+    public void testSubmissionOfTweetFailed(){
+        
+    }
+    
     
     long millis(){
          return System.currentTimeMillis();

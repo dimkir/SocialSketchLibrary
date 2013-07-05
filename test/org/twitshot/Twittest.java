@@ -4,6 +4,15 @@
  */
 package org.twitshot;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import twitter4j.Status;
+import twitter4j.Twitter;
+import twitter4j.TwitterException;
+import twitter4j.TwitterFactory;
+import twitter4j.auth.AccessToken;
+import twitter4j.auth.RequestToken;
+
 /**
  *
  * @author Dimitry Alhambra <dimitry@languagekings.com>
@@ -36,7 +45,7 @@ public class Twittest {
       }
     }
     //persist to the accessToken for future reference.
-    storeAccessToken(twitter.verifyCredentials().getId() , accessToken);
+    //storeAccessToken(twitter.verifyCredentials().getId() , accessToken);
     Status status = twitter.updateStatus(args[0]);
     System.out.println("Successfully updated the status to [" + status.getText() + "].");
     System.exit(0);

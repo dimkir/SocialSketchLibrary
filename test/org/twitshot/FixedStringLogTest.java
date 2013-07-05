@@ -1,6 +1,6 @@
 package org.twitshot;
 
-import org.twitshot.FixedStringLog;
+import org.twitshot.utils.FixedStringLog;
 import static junit.framework.Assert.assertEquals;
 import junit.framework.TestCase;
 
