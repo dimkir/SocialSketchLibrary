@@ -222,7 +222,7 @@ class LibConfig extends AbstractLibraryHelper
    * Returns Map<String,String> with the twitter configuration 
    * data like (APP_KEY, APP_SECRET) and all this stuff.
    */
-    Map<String,String> getTwitterConfiguration(){
+  Map<String,String> getTwitterConfiguration(){
     Map<String, String> configMap = new HashMap<String, String>();
     String[] keys = { C_OAUTH_SECRET, C_OAUTH_TOKEN, C_CONSUMER_SECRET, C_CONSUMER_KEY };
     for( String key : keys){

@@ -112,21 +112,23 @@ class TweetDirector extends AbstractLibraryHelper
      * This innert class provides API to access info from within the TweetDirector
      * the purpose of communicating with TweetThread
      */
-    class TweetDirectorGate implements ITweetDirectorGate
+    class TweetDirectorGate
     {
+       
+      TweetDirectorGate(){
+      }
+       
       // here go the method to 
       // do the things:
       // ???
-        @Override
-      public Map<String, String> getCredentials(){
+      Map<String, String> getCredentials(){
          return mLogOnCredentials;
       }
       
       /**
        * Just way (for TwitterThread to communicate with log console)
        */
-        @Override
-      public void println(String s){
+      void println(String s){
          TweetDirector.this.println(s);
       }
     }
