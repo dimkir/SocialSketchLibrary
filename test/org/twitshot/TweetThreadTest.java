@@ -1,6 +1,6 @@
 package org.twitshot;
 
-import org.twitshot.thread.TweetThread;
+import org.twitshot.thread.MessageShareThread;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import junit.framework.TestCase;
@@ -41,7 +41,7 @@ public class TweetThreadTest extends TestCase {
     public void testInitialize(){
         
         mStubTwDirectorGate.setCredentials(FakeTweetDirectorGate.VALID);
-        TweetThread tt = new TweetThread(mStubTwDirectorGate);
+        MessageShareThread tt = new MessageShareThread(mStubTwDirectorGate);
         
         tt.start();
         

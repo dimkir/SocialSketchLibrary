@@ -1,6 +1,6 @@
 package org.twitshot;
 
-import org.twitshot.thread.ITweetDirectorGate;
+import org.twitshot.thread.IThreadParameters;
 import org.twitshot.utils.IConfigXmlSpecification;
 import java.util.HashMap;
 import java.util.Map;
@@ -10,7 +10,7 @@ import java.util.Map;
  * @author Dimitry Alhambra <dimitry@languagekings.com>
  */
 class FakeTweetDirectorGate implements 
-        ITweetDirectorGate , IConfigXmlSpecification
+        IThreadParameters , IConfigXmlSpecification
 {
 
     public FakeTweetDirectorGate() {
