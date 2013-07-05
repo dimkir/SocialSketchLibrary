@@ -3,15 +3,20 @@ package org.twitshot.helper;
 
 import java.util.Map;
 import org.twitshot.utils.FixedStringLog;
-import org.twitshot.thread.ITweetDirectorGate;
 import org.twitshot.ex.TweetDirectorEx;
 import org.twitshot.thread.TweetThread;
 import org.twitshot.utils.IConfigXmlSpecification;
 import processing.core.*;
 /**
- * This class encapsulates and fluentizes operations with twitter.
- * It uses background thread, this is why it should be initialized and then
- * .start() should be called to start the thread.
+ * Provides abstract object with API convenient for the library to share
+ * sketch output. As we assume that most of those shares will be done
+ * via remote services, this object (thread) should be started / shutdown.
+ * Hence methods:
+ * <pre>
+ *  shutdown();
+ *  start();
+ * </pre>
+ * 
  * In order to avoid "delay" whilst starting sketch (delay induced by 
  * attempting to perform OAuth authentication, the authentication is 
  * only happening when .start() method was called.
@@ -58,7 +63,17 @@ public class TweetDirector extends AbstractLibraryHelper
       mDirectorLog = new FixedStringLog(C_LOG_SIZE);
    }
    
-  
+   /**
+    * Returns logon credentials supplied by the caller.
+    * Because credentials are passed as string-map,
+    * they should suit for any type of MessageSharer which
+    * operates behind ShareDirector..
+    * @return 
+    */
+   public Map<String, String> getLogOnCredentials(){
+       return mLogOnCredentials;
+   }
+   
    /**
     *  Tweets the message (actually submits to thread to tweet)
     */
@@ -80,7 +95,7 @@ public class TweetDirector extends AbstractLibraryHelper
      */
     public void start(){
         // i probably should pass some parametes to the thread???
-        mTweetThread = new TweetThread(new TweetDirectorGate());
+        mTweetThread = new TweetThread(new TweetDirectorGate(this));
         mTweetThread.start();
     }
       
@@ -110,30 +125,6 @@ public class TweetDirector extends AbstractLibraryHelper
     public FixedStringLog getLogObject(){
       // should there always be at least one message in the log??
       return mDirectorLog;
-    }
-    
-    
-    /**
-     * This inner class provides API to access info from within the TweetDirector
-     * the purpose of communicating with TweetThread
-     */
-    class TweetDirectorGate implements ITweetDirectorGate
-    {
-      // here go the method to 
-      // do the things:
-      // ???
-        @Override
-      public Map<String, String> getCredentials(){
-         return mLogOnCredentials;
-      }
-      
-      /**
-       * Just way (for TwitterThread to communicate with log console)
-       */
-        @Override
-      public void println(String s){
-         TweetDirector.this.println(s);
-      }
     }
     
 }
