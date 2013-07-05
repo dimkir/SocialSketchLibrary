@@ -1,4 +1,6 @@
 package org.twitshot;
+import org.twitshot.utils.ConsoleLogger;
+import org.twitshot.utils.ILogging;
 import processing.core.*;
 
 /**
@@ -8,6 +10,7 @@ import processing.core.*;
 abstract class AbstractLibraryBase
 {
    protected final PApplet mParent;
+   private ILogging logger;
    
    protected AbstractLibraryBase(PApplet papp){
      if ( papp == null ){
@@ -15,6 +18,7 @@ abstract class AbstractLibraryBase
      }
      
       mParent = papp;
+      logger = new ConsoleLogger(papp);
    }
    
   
@@ -23,6 +27,6 @@ abstract class AbstractLibraryBase
    * Assumes this.parent is set in the current implementation.
    */
   protected void println(String s){
-     mParent.println(s);
+     logger.println(s);
   }   
 }
