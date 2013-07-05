@@ -1,18 +1,26 @@
 package org.twitshot;
-import java.lang.Thread;
-import java.util.Map;
+import java.io.InputStream;
 import java.util.Queue;
 import java.util.LinkedList;
-import org.twitshot.TweetDirector.TweetDirectorGate;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import processing.core.*;
+import twitter4j.Status;
+import twitter4j.StatusUpdate;
+import twitter4j.Twitter;
+import twitter4j.TwitterException;
+import twitter4j.TwitterFactory;
+import twitter4j.conf.ConfigurationBuilder;
 /**
  * This is the thread where TweetDirector work is going
  * to happen. (Oauth authenticatin and sending tweets if necesary)
  */
 class TweetThread extends Thread
+implements IConfigXmlSpecification // for constants of the credentials fields.
 {
  
-  private TweetDirectorGate mTweetDirectorGate;
+  private ITweetDirectorGate mTweetDirectorGate;
   
   /**
    * @var mMessageRecordQueu this one holds queue of tweets to be sent. As it will be accessed from
@@ -39,18 +47,39 @@ class TweetThread extends Thread
    * .getRunning()
    * .setRunning(??)
    */
-  private boolean mIsRunning = false;
+  // we start with running flag equal to true
+  private boolean mIsRunning = true;
   
   /**
    * Has status of whether we already initialized or not.
    */
   private boolean mIsInitialized = false;
   
+  
+  private ExponentialBackoff mExponentialBackoff;
+  private Twitter tw;
+  
+  /**
+   * @var pimage2 this is object which will be used to covert PImage to
+   * compressed input stream.
+   */
+  private PImage2 pimage2;
+  
+  /**
+   * @var C_IMAGE_COMPRESSION_FORMAT_EXT when we compress PImage and
+   * represent as InputStream this extension determins format 
+   * into which we can compress. For more details see
+   * @see PImage2.saveImageToStream and the compression method.
+   */
+  private static final String C_IMAGE_COMPRESSION_FORMAT_EXT = "png";
+  
   /**
    * Passes TDG for if we want to communicate
    */
-  TweetThread(TweetDirectorGate twDirectorGate){
+  TweetThread(ITweetDirectorGate twDirectorGate){
      mTweetDirectorGate = twDirectorGate;
+     mExponentialBackoff = new ExponentialBackoff( 2.0f, 30, true);
+     pimage2 = new PImage2(100,100); 
   }
   
   
@@ -68,10 +97,12 @@ class TweetThread extends Thread
     // communication error: this means that we may want to retry,
     // whereas in case there's "credentials invalid" error: that probalby means
     // that we are not gonna authenticate... :S
+    println("Started run() method");
     while ( getRunning() ){
+        println("Running thread loop");
         sleep(100);
         if ( !isInitialized() ){
-           init();
+           initBlocking();
         }
         if ( isInitializationSuccessful() ) {
             iterate(); // perform what we have to perform
@@ -110,14 +141,49 @@ class TweetThread extends Thread
   
   /**
    * Here we should perform authentication.
+   * This is called on worker thread (in the run() loop).
+   * // TODO: should implement here some kind of 
+   * exponential back off in case ther was an error initializing or smth.
    * 
    */
-  private void init(){
+  private void initBlocking(){
+       
+       // this method is gated by exponential backoff
+       if  ( !mExponentialBackoff.isReadyToRetry() ){
+           // if not enough time has passed since last failure.
+           return; 
+       }
        // let's get initialization params;
        // perform authentication.
        //try to connect to the 
        println("TweetThread::init(): performing authentication");
-       mIsInitialized = true;
+       Map<String, String> cred = getTwitterCredentials();
+       
+       ConfigurationBuilder cb = new ConfigurationBuilder();
+       cb.setOAuthConsumerKey(cred.get(C_CONSUMER_KEY));
+       cb.setOAuthConsumerSecret(cred.get(C_CONSUMER_SECRET));
+       cb.setOAuthAccessToken(cred.get(C_OAUTH_TOKEN));
+       cb.setOAuthAccessTokenSecret(cred.get(C_OAUTH_SECRET));
+       
+       tw = new TwitterFactory(cb.build()).getInstance();
+       try{
+             println("Trying veryfy credentials");
+             tw.verifyCredentials();
+             
+             mIsInitialized = true;
+             mExponentialBackoff.registerSuccess();
+             println("Registered successfully, userid: " + tw.getId());
+             
+       }
+       catch (TwitterException twex){
+            if ( twex.getStatusCode() == 401 ){
+                println("Cannot authenticate, probably wrong credentials: " + twex.getMessage());
+            }
+            else{
+                println("Some other error attempting authenticate twitter: " + twex.getErrorMessage());
+            }
+            mExponentialBackoff.registerFailure();
+       }
   }
   
   
@@ -151,6 +217,7 @@ class TweetThread extends Thread
   synchronized void submitMessage(String msg, PImage img){
       MessageRecord mr = new MessageRecord(msg, img);
       mMessageRecordQueue.add(mr);
+      println("Added to messageQueue: " + mr.toString());
   }
   
   
@@ -201,9 +268,26 @@ class TweetThread extends Thread
    * Performs blocking call to tweet message
    * @return ?? should return some success status? no?
    */
-  void tweetMessageBlocking(MessageRecord mr){
-     println("TweetThread::tweetMessageBlocking(): " + mr.msg + " image:" + mr.img.toString());
-  }
+    private void tweetMessageBlocking(MessageRecord mr) {
+        try {
+            if (mr.img == null) {
+                println("TweetThread::tweetMessageBlocking(): " + mr.msg + " image: null");
+                Status rez = tw.updateStatus(mr.msg);
+                println("Updated successfully, status: " +  rez.toString());
+            } else {
+                StatusUpdate supdate = new StatusUpdate(mr.msg);
+//                supdate.setMedia(C_PROFILE_TAG, null);
+                addImageToUpdate(supdate, mr.img);
+                //throw new UnsupportedOperationException("Sending statuses with images is not supported currently");
+                Status rez = tw.updateStatus(supdate);
+                println("Updated successfully, status: " +  rez.toString());                
+                //println("TweetThread::tweetMessageBlocking(): " + mr.msg + " image:" + mr.img.toString());
+            }
+        } catch (TwitterException ex) {
+            Logger.getLogger(TweetThread.class.getName()).log(Level.SEVERE, null, ex);
+            println("Twitter exception: " +  ex.getMessage());
+        }
+    }
   
   
   /**
@@ -238,6 +322,21 @@ class TweetThread extends Thread
   private void println(String s ){
      mTweetDirectorGate.println(s);
   }
+
+  
+  /**
+   * Just fluentizer to get credentials from the 
+   * credentials supplier which is TweetDirctorGate.
+   * @return 
+   */
+  private Map<String, String> getTwitterCredentials() {
+    return mTweetDirectorGate.getCredentials();
+  }
+
+    private void addImageToUpdate(StatusUpdate supdate, PImage img) {
+        InputStream is =  pimage2.getPImageAsInputStream(img, C_IMAGE_COMPRESSION_FORMAT_EXT);
+        supdate.media("MyImage", is);
+    }
   
   
   /**
@@ -256,6 +355,18 @@ class TweetThread extends Thread
        msg = s;
        img = vImg;
     }
+
+    
+    /**
+     * Returns string with info about this mr.
+     */
+    @Override
+    public String toString() {
+        return "MessageRecord['" + msg + "', {" + img + "}]";
+    }
+    
+    
+    
   }
   
   /**
