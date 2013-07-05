@@ -21,7 +21,7 @@ import processing.event.*;
  * TODO: how is this going to work if renderer is P2D or P3D???? 
  * we use operations like text() and image() in this library?
  */
-public class Twitshot  extends AbstractLibraryBase // the AbstractBase just holds some basic methods like prinltn() and other convenience methods. As well as protected field .parent)
+public class Sketchshot  extends AbstractLibraryBase // the AbstractBase just holds some basic methods like prinltn() and other convenience methods. As well as protected field .parent)
 {
 
   /**
@@ -59,12 +59,12 @@ public class Twitshot  extends AbstractLibraryBase // the AbstractBase just hold
    * @param papp
    * @return 
    */
-  public static Twitshot spawn(PApplet papp){
+  public static Sketchshot spawn(PApplet papp){
       try {
-          Twitshot tws = new Twitshot(papp);
+          Sketchshot tws = new Sketchshot(papp);
           return tws;
       } catch (LibraryLoadException ex) {
-          Logger.getLogger(Twitshot.class.getName()).log(Level.SEVERE, null, ex);
+          Logger.getLogger(Sketchshot.class.getName()).log(Level.SEVERE, null, ex);
           return null;
       }
   }
@@ -75,7 +75,7 @@ public class Twitshot  extends AbstractLibraryBase // the AbstractBase just hold
    * @param xmlConfigFile if NULL then config file path is read form the environment.
    * @throws LibraryLoadException()
    */
-  public Twitshot(PApplet parent, String xmlConfigFile) throws LibraryLoadException
+  public Sketchshot(PApplet parent, String xmlConfigFile) throws LibraryLoadException
   {
      super(parent);
      
@@ -110,7 +110,7 @@ public class Twitshot  extends AbstractLibraryBase // the AbstractBase just hold
    * Initializes Twitshot trying to take Twitter Credentials from environment variable.
    * @param parent 
    */
-  public Twitshot(PApplet parent) throws LibraryLoadException{
+  public Sketchshot(PApplet parent) throws LibraryLoadException{
       this(parent, null);
   }
   
