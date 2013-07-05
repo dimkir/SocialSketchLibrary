@@ -4,7 +4,7 @@ package org.twitshot.helper;
 import java.util.Map;
 import org.twitshot.utils.FixedStringLog;
 import org.twitshot.ex.TweetDirectorEx;
-import org.twitshot.thread.TweetThread;
+import org.twitshot.thread.MessageShareThread;
 import org.twitshot.utils.IConfigXmlSpecification;
 import processing.core.*;
 /**
@@ -21,7 +21,7 @@ import processing.core.*;
  * attempting to perform OAuth authentication, the authentication is 
  * only happening when .start() method was called.
  */
-public class TweetDirector extends AbstractLibraryHelper
+public class ShareDirector extends AbstractLibraryHelper
   implements IConfigXmlSpecification
 {
   
@@ -36,7 +36,7 @@ public class TweetDirector extends AbstractLibraryHelper
    /**
     * @var mTweetThread thread where all the stuff takes b
     */
-   private TweetThread mTweetThread; 
+   private MessageShareThread mTweetThread; 
   
    /**
     * What's the contract? In case the credentials contain "invalid" information (like gibberish or 
@@ -48,7 +48,7 @@ public class TweetDirector extends AbstractLibraryHelper
     * @throws TweetDirectorEx some kind of exception saying that tweet director couldn't initialize.
     * 
     */
-   public TweetDirector(PApplet parent, Map<String,String> logOnCredentials) throws TweetDirectorEx
+   public ShareDirector(PApplet parent, Map<String,String> logOnCredentials) throws TweetDirectorEx
    {
       super(parent);
       // make quick verification of the credentials. 
@@ -95,7 +95,7 @@ public class TweetDirector extends AbstractLibraryHelper
      */
     public void start(){
         // i probably should pass some parametes to the thread???
-        mTweetThread = new TweetThread(new TweetDirectorGate(this));
+        mTweetThread = new MessageShareThread(new ShareDirectorParamsForThread(this));
         mTweetThread.start();
     }
       

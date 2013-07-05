@@ -1,9 +1,9 @@
 package org.twitshot.helper;
 
 import java.util.Map;
-import org.twitshot.helper.TweetDirector;
-import org.twitshot.thread.ITweetDirectorGate;
-import org.twitshot.thread.ITweetDirectorGate;
+import org.twitshot.helper.ShareDirector;
+import org.twitshot.thread.IThreadParameters;
+import org.twitshot.thread.IThreadParameters;
 import org.twitshot.utils.ILogging;
 
 /**
@@ -11,10 +11,10 @@ import org.twitshot.utils.ILogging;
  * informatino it needs. TweetDirector
  * the purpose of communicating with TweetThread
  */
-public class TweetDirectorGate implements ITweetDirectorGate {
-    private final TweetDirector outerX;
+public class ShareDirectorParamsForThread implements IThreadParameters {
+    private final ShareDirector outerX;
 
-    public TweetDirectorGate(final TweetDirector outerX) {
+    public ShareDirectorParamsForThread(final ShareDirector outerX) {
         this.outerX = outerX;
     }
 

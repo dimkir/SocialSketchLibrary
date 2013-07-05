@@ -118,7 +118,7 @@ class BlockingMessageSharer {
                 //println("TweetThread::tweetMessageBlocking(): " + mr.msg + " image:" + mr.img.toString());
             }
         } catch (TwitterException ex) {
-            Logger.getLogger(TweetThread.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MessageShareThread.class.getName()).log(Level.SEVERE, null, ex);
             println("Twitter exception: " + ex.getMessage());
         }
     }

@@ -6,7 +6,7 @@ import org.twitshot.helper.Menu;
 import org.twitshot.helper.MouseManager;
 import org.twitshot.helper.KeyManager;
 import org.twitshot.helper.LibraryDrawing;
-import org.twitshot.helper.TweetDirector;
+import org.twitshot.helper.ShareDirector;
 import org.twitshot.helper.ScreenshotManager;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -44,7 +44,7 @@ public class Twitshot  extends AbstractLibraryBase // the AbstractBase just hold
 
   private LibraryDrawing libraryDrawing;       // handles drawing (basic concepts)
   private Menu menu;                           // more appropriate name should be "gui"
-  private TweetDirector tweetDirector;     // offers convenience twitter messaging API
+  private ShareDirector tweetDirector;     // offers convenience twitter messaging API
   
   
   
@@ -130,7 +130,7 @@ public class Twitshot  extends AbstractLibraryBase // the AbstractBase just hold
     keyManager = new KeyManager(parent); // ?? should it get this parameter?
     mouseManager = new MouseManager(parent);
     screenshotManager = new ScreenshotManager(parent);
-    tweetDirector = new TweetDirector(parent, mLibConfig.getTwitterConfiguration() );  // can throw TwitterDirectorEx
+    tweetDirector = new ShareDirector(parent, mLibConfig.getTwitterConfiguration() );  // can throw TwitterDirectorEx
                                                                                        //if twitterConfiguration is NULL
     
     // so if we got here - we have start.

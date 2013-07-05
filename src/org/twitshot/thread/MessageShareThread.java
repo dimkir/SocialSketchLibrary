@@ -10,7 +10,7 @@ import processing.core.*;
  * This is the thread where TweetDirector work is going
  * to happen. (Oauth authenticatin and sending tweets if necesary)
  */
-public class TweetThread extends Thread
+public class MessageShareThread extends Thread
 implements IConfigXmlSpecification // for constants of the credentials fields.
 {
  
@@ -20,7 +20,7 @@ implements IConfigXmlSpecification // for constants of the credentials fields.
    */
   private BlockingMessageSharer twitterBlocking;
     
-  private ITweetDirectorGate mTweetDirectorGate;
+  private IThreadParameters mTweetDirectorGate;
   
   /**
    * @var mMessageRecordQueu this one holds queue of tweets to be sent. As it will be accessed from
@@ -61,7 +61,7 @@ implements IConfigXmlSpecification // for constants of the credentials fields.
   /**
    * Passes TDG for if we want to communicate
    */
-  public TweetThread(ITweetDirectorGate twDirectorGate){
+  public MessageShareThread(IThreadParameters twDirectorGate){
      mTweetDirectorGate = twDirectorGate;
      
      // Initializing logggers.

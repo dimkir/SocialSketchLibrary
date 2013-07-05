@@ -7,7 +7,7 @@ import org.twitshot.utils.ILogging;
  *
  * @author Dimitry Alhambra <dimitry@languagekings.com>
  */
-public interface ITweetDirectorGate {
+public interface IThreadParameters {
 
     // here go the method to
     // do the things:
