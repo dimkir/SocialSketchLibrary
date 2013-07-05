@@ -1,9 +1,12 @@
-package org.twitshot.thread;
+package org.twitshot.helper;
 
 import java.io.InputStream;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.twitshot.thread.IBlockingMessageSharer;
+import org.twitshot.thread.MessageRecord;
+import org.twitshot.thread.MessageShareThread;
 import static org.twitshot.utils.IConfigXmlSpecification.C_CONSUMER_KEY;
 import static org.twitshot.utils.IConfigXmlSpecification.C_CONSUMER_SECRET;
 import static org.twitshot.utils.IConfigXmlSpecification.C_OAUTH_SECRET;
@@ -32,7 +35,7 @@ import twitter4j.conf.ConfigurationBuilder;
  * Actually this doesn't even have to be only Twitter, it can be any PUBLISHER.
  * (Facebook? Flickr? Tumblr?)
  */
-class BlockingMessageSharer {
+class BlockingTweetMsgSharer implements IBlockingMessageSharer {
 
     /**
      * This is object which will be used to covert PImage to compressed input
@@ -50,7 +53,7 @@ class BlockingMessageSharer {
     private Twitter tw;
     private ILogging mLogger;
 
-    BlockingMessageSharer(ILogging iLogger) {
+    BlockingTweetMsgSharer(ILogging iLogger) {
         mLogger = iLogger;
         pimage2 = new PImage2(100, 100);
     }
@@ -65,6 +68,7 @@ class BlockingMessageSharer {
      * @return NEGATIVE number on erorr
      *         0 on success
      */
+    @Override
     public int initBlocking(Map<String, String> cred) {
         // let's get initialization params;
         // perform authentication.
@@ -102,6 +106,7 @@ class BlockingMessageSharer {
      *
      * @return ?? should return some success status? no?
      */
+    @Override
     public void shareMessageBlocking(MessageRecord mr) {
         try {
             if (mr.img == null) {
