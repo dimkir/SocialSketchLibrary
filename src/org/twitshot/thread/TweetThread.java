@@ -8,6 +8,10 @@ import java.util.logging.Logger;
 import org.twitshot.utils.ExponentialBackoff;
 import org.twitshot.ITweetDirectorGate;
 import org.twitshot.utils.IConfigXmlSpecification;
+import static org.twitshot.utils.IConfigXmlSpecification.C_CONSUMER_KEY;
+import static org.twitshot.utils.IConfigXmlSpecification.C_CONSUMER_SECRET;
+import static org.twitshot.utils.IConfigXmlSpecification.C_OAUTH_SECRET;
+import static org.twitshot.utils.IConfigXmlSpecification.C_OAUTH_TOKEN;
 import org.twitshot.utils.PImage2;
 import processing.core.*;
 import twitter4j.Status;
@@ -24,6 +28,11 @@ public class TweetThread extends Thread
 implements IConfigXmlSpecification // for constants of the credentials fields.
 {
  
+  /**
+   * Object which encapsulates attempts to send tweet.
+   */
+  private TwitterBlockingHelper twitterBlocking = new TwitterBlockingHelper(); 
+    
   private ITweetDirectorGate mTweetDirectorGate;
   
   /**
@@ -106,7 +115,7 @@ implements IConfigXmlSpecification // for constants of the credentials fields.
         println("Running thread loop");
         sleep(100);
         if ( !isInitialized() ){
-           initBlocking();
+           initAttempt();
         }
         if ( isInitializationSuccessful() ) {
             iterate(); // perform what we have to perform
@@ -150,44 +159,14 @@ implements IConfigXmlSpecification // for constants of the credentials fields.
    * exponential back off in case ther was an error initializing or smth.
    * 
    */
-  private void initBlocking(){
+  private void initAttempt(){
        
        // this method is gated by exponential backoff
        if  ( !mExponentialBackoff.isReadyToRetry() ){
            // if not enough time has passed since last failure.
            return; 
        }
-       // let's get initialization params;
-       // perform authentication.
-       //try to connect to the 
-       println("TweetThread::init(): performing authentication");
-       Map<String, String> cred = getTwitterCredentials();
-       
-       ConfigurationBuilder cb = new ConfigurationBuilder();
-       cb.setOAuthConsumerKey(cred.get(C_CONSUMER_KEY));
-       cb.setOAuthConsumerSecret(cred.get(C_CONSUMER_SECRET));
-       cb.setOAuthAccessToken(cred.get(C_OAUTH_TOKEN));
-       cb.setOAuthAccessTokenSecret(cred.get(C_OAUTH_SECRET));
-       
-       tw = new TwitterFactory(cb.build()).getInstance();
-       try{
-             println("Trying veryfy credentials");
-             tw.verifyCredentials();
-             
-             mIsInitialized = true;
-             mExponentialBackoff.registerSuccess();
-             println("Registered successfully, userid: " + tw.getId());
-             
-       }
-       catch (TwitterException twex){
-            if ( twex.getStatusCode() == 401 ){
-                println("Cannot authenticate, probably wrong credentials: " + twex.getMessage());
-            }
-            else{
-                println("Some other error attempting authenticate twitter: " + twex.getErrorMessage());
-            }
-            mExponentialBackoff.registerFailure();
-       }
+       twitterBlocking.initBlocking();
   }
   
   
@@ -250,7 +229,7 @@ implements IConfigXmlSpecification // for constants of the credentials fields.
       
       if ( mr != null){
          // TODO: need to add return value to this method.
-         tweetMessageBlocking(mr);
+         twitterBlocking.tweetMessageBlocking(mr);
       }
       else{
          println("TweetThread::iterate(): no messages in queue");
@@ -267,31 +246,7 @@ implements IConfigXmlSpecification // for constants of the credentials fields.
       
   }
   
-  
-  /**
-   * Performs blocking call to tweet message
-   * @return ?? should return some success status? no?
-   */
-    private void tweetMessageBlocking(MessageRecord mr) {
-        try {
-            if (mr.img == null) {
-                println("TweetThread::tweetMessageBlocking(): " + mr.msg + " image: null");
-                Status rez = tw.updateStatus(mr.msg);
-                println("Updated successfully, status: " +  rez.toString());
-            } else {
-                StatusUpdate supdate = new StatusUpdate(mr.msg);
-//                supdate.setMedia(C_PROFILE_TAG, null);
-                addImageToUpdate(supdate, mr.img);
-                //throw new UnsupportedOperationException("Sending statuses with images is not supported currently");
-                Status rez = tw.updateStatus(supdate);
-                println("Updated successfully, status: " +  rez.toString());                
-                //println("TweetThread::tweetMessageBlocking(): " + mr.msg + " image:" + mr.img.toString());
-            }
-        } catch (TwitterException ex) {
-            Logger.getLogger(TweetThread.class.getName()).log(Level.SEVERE, null, ex);
-            println("Twitter exception: " +  ex.getMessage());
-        }
-    }
+
   
   
   /**
@@ -343,34 +298,67 @@ implements IConfigXmlSpecification // for constants of the credentials fields.
     }
   
   
+class TwitterBlockingHelper
+{
+    public void initBlocking(){
+       // let's get initialization params;
+       // perform authentication.
+       //try to connect to the 
+       println("TweetThread::init(): performing authentication");
+       Map<String, String> cred = getTwitterCredentials();
+       
+       ConfigurationBuilder cb = new ConfigurationBuilder();
+       cb.setOAuthConsumerKey(cred.get(C_CONSUMER_KEY));
+       cb.setOAuthConsumerSecret(cred.get(C_CONSUMER_SECRET));
+       cb.setOAuthAccessToken(cred.get(C_OAUTH_TOKEN));
+       cb.setOAuthAccessTokenSecret(cred.get(C_OAUTH_SECRET));
+       
+       tw = new TwitterFactory(cb.build()).getInstance();
+       try{
+             println("Trying veryfy credentials");
+             tw.verifyCredentials();
+             
+             mIsInitialized = true;
+             mExponentialBackoff.registerSuccess();
+             println("Registered successfully, userid: " + tw.getId());
+             
+       }
+       catch (TwitterException twex){
+            if ( twex.getStatusCode() == 401 ){
+                println("Cannot authenticate, probably wrong credentials: " + twex.getMessage());
+            }
+            else{
+                println("Some other error attempting authenticate twitter: " + twex.getErrorMessage());
+            }
+            mExponentialBackoff.registerFailure();
+       }        
+    }
+    
+  
   /**
-   *  POJO for keeping info about tweet.
+   * Performs blocking call to tweet message
+   * @return ?? should return some success status? no?
    */
-  private class MessageRecord
-  {
-    
-    String msg;
-    PImage img;
-    
-    /**
-     * 
-     */
-    MessageRecord(String s, PImage vImg){
-       msg = s;
-       img = vImg;
-    }
-
-    
-    /**
-     * Returns string with info about this mr.
-     */
-    @Override
-    public String toString() {
-        return "MessageRecord['" + msg + "', {" + img + "}]";
-    }
-  }
-  
-  
-  
+    public void tweetMessageBlocking(MessageRecord mr) {
+        try {
+            if (mr.img == null) {
+                println("TweetThread::tweetMessageBlocking(): " + mr.msg + " image: null");
+                Status rez = tw.updateStatus(mr.msg);
+                println("Updated successfully, status: " +  rez.toString());
+            } else {
+                StatusUpdate supdate = new StatusUpdate(mr.msg);
+//                supdate.setMedia(C_PROFILE_TAG, null);
+                addImageToUpdate(supdate, mr.img);
+                //throw new UnsupportedOperationException("Sending statuses with images is not supported currently");
+                Status rez = tw.updateStatus(supdate);
+                println("Updated successfully, status: " +  rez.toString());                
+                //println("TweetThread::tweetMessageBlocking(): " + mr.msg + " image:" + mr.img.toString());
+            }
+        } catch (TwitterException ex) {
+            Logger.getLogger(TweetThread.class.getName()).log(Level.SEVERE, null, ex);
+            println("Twitter exception: " +  ex.getMessage());
+        }
+    }    
+}
   
 }
