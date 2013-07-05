@@ -16,5 +16,10 @@ public interface IThreadParameters {
 
     
     ILogging getLogger();
-    
+   
+    /**
+     * Thread will need to know via whom to share messages.
+     * @return 
+     */
+    IBlockingMessageSharer getBlockingMessageSharer();
 }
