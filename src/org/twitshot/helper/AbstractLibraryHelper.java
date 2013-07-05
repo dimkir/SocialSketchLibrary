@@ -67,7 +67,7 @@ abstract class AbstractLibraryHelper
    * thus allowing to write to the same stream.
    * @return 
    */
-  protected ILogging getLogger(){
+  public ILogging getLogger(){
        return mLogger;
   }
  
