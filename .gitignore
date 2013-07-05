@@ -42,3 +42,7 @@ ehthumbs.db
 Thumbs.db
 /nbproject/private/
 /nbproject/
+/build/
+/dist/
+manifest.mf
+build.xml
