@@ -60,6 +60,15 @@ abstract class AbstractLibraryHelper
    */
   protected void println(String s){
       mLogger.println(s);
-  }     
+  }  
+  
+  /**
+   * Returns instance of logger to any subclass
+   * thus allowing to write to the same stream.
+   * @return 
+   */
+  protected ILogging getLogger(){
+       return mLogger;
+  }
  
 }
