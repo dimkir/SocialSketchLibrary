@@ -18,7 +18,7 @@ implements IConfigXmlSpecification // for constants of the credentials fields.
   /**
    * Object which encapsulates attempts to send tweet.
    */
-  private BlockingMessageSharer twitterBlocking;
+  private IBlockingMessageSharer blockingMessageSharer;
     
   private IThreadParameters mTweetDirectorGate;
   
@@ -61,12 +61,12 @@ implements IConfigXmlSpecification // for constants of the credentials fields.
   /**
    * Passes TDG for if we want to communicate
    */
-  public MessageShareThread(IThreadParameters twDirectorGate){
-     mTweetDirectorGate = twDirectorGate;
+  public MessageShareThread(IThreadParameters treadParams){
+     mTweetDirectorGate = treadParams;
      
      // Initializing logggers.
-     mLogger = twDirectorGate.getLogger();
-     twitterBlocking =  new BlockingMessageSharer(twDirectorGate.getLogger()); 
+     mLogger = treadParams.getLogger();
+     blockingMessageSharer =  treadParams.getBlockingMessageSharer(); 
 
      mExponentialBackoff = new ExponentialBackoff( 2.0f, 30, true);
   }
@@ -143,7 +143,7 @@ implements IConfigXmlSpecification // for constants of the credentials fields.
            return; 
        }
        
-       if ( twitterBlocking.initBlocking(mTweetDirectorGate.getCredentials()) < 0 ){
+       if ( blockingMessageSharer.initBlocking(mTweetDirectorGate.getCredentials()) < 0 ){
            // failure
            mExponentialBackoff.registerFailure();
        }
@@ -214,7 +214,7 @@ implements IConfigXmlSpecification // for constants of the credentials fields.
       
       if ( mr != null){
          // TODO: need to add return value to this method.
-         twitterBlocking.shareMessageBlocking(mr);
+         blockingMessageSharer.shareMessageBlocking(mr);
       }
       else{
          println("TweetThread::iterate(): no messages in queue");
