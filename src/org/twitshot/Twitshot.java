@@ -1,4 +1,6 @@
 package org.twitshot;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import processing.core.*;
 import processing.event.*;
 
@@ -37,6 +39,26 @@ public class Twitshot  extends AbstractLibraryBase // the AbstractBase just hold
   
   
   
+  
+  /**
+   * This method is meant for simplified creation of the library.
+   * This one doesn't throw exceptions and thus
+   * allows one-line inclusion into sketch in {@code setup()} via
+   * <p>
+   * {@code Twitshot.spawn(this);}
+   * </p>
+   * @param papp
+   * @return 
+   */
+  public static Twitshot spawn(PApplet papp){
+      try {
+          Twitshot tws = new Twitshot(papp);
+          return tws;
+      } catch (LibraryLoadException ex) {
+          Logger.getLogger(Twitshot.class.getName()).log(Level.SEVERE, null, ex);
+          return null;
+      }
+  }
   
   /**
    * Inits library and loads twitter credentials from the xmlConfigFile {@link xmlConfigFileSpec}.
@@ -147,6 +169,7 @@ public class Twitshot  extends AbstractLibraryBase // the AbstractBase just hold
    * Here we just pass the event to the appropriate manager.
    */
   public void keyEvent(KeyEvent evt){
+     // throw new NullPointerException("Dummy exception just to show stack");
      keyManager.keyEvent(evt);
   }
   
@@ -180,7 +203,7 @@ public class Twitshot  extends AbstractLibraryBase // the AbstractBase just hold
    */
   public void pre(){
     
-    libraryDrawing.drawRedRectangle80();
+    //libraryDrawing.drawRedRectangle80();
   }
   
   /**
@@ -220,7 +243,7 @@ public class Twitshot  extends AbstractLibraryBase // the AbstractBase just hold
     
     
     // ************** STANDARD OVERLAYS **************************
-    libraryDrawing.drawLineGrid();
+    //libraryDrawing.drawLineGrid();
     libraryDrawing.displayFrameRate();
     libraryDrawing.displayStringLog( tweetDirector.getLogObject() , C_STRING_LOG_X, C_STRING_LOG_Y );
     
