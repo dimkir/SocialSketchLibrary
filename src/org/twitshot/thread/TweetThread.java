@@ -368,17 +368,9 @@ implements IConfigXmlSpecification // for constants of the credentials fields.
     public String toString() {
         return "MessageRecord['" + msg + "', {" + img + "}]";
     }
-    
-    
-    
   }
   
-  /**
-   * This is wrapper for the results being returned
-   * from TweetThread.
-   */
-  class ResultRecord
-  {
-  }
+  
+  
   
 }
