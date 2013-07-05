@@ -3,7 +3,7 @@ package org.twitshot.helper;
 
 import java.util.Map;
 import org.twitshot.utils.FixedStringLog;
-import org.twitshot.ITweetDirectorGate;
+import org.twitshot.thread.ITweetDirectorGate;
 import org.twitshot.ex.TweetDirectorEx;
 import org.twitshot.thread.TweetThread;
 import org.twitshot.utils.IConfigXmlSpecification;
@@ -114,7 +114,7 @@ public class TweetDirector extends AbstractLibraryHelper
     
     
     /**
-     * This innert class provides API to access info from within the TweetDirector
+     * This inner class provides API to access info from within the TweetDirector
      * the purpose of communicating with TweetThread
      */
     class TweetDirectorGate implements ITweetDirectorGate
