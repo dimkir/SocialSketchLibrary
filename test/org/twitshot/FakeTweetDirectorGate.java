@@ -1,5 +1,6 @@
 package org.twitshot;
 
+import org.twitshot.thread.ITweetDirectorGate;
 import org.twitshot.utils.IConfigXmlSpecification;
 import java.util.HashMap;
 import java.util.Map;
