@@ -1,15 +1,15 @@
-package org.twitshot;
+package org.twitshot.ex;
 /**
  * This exception occurs when there's problem within {@link FontBoss} 
  * whilst loading font.
  */
 public class FontLoadEx extends LibraryLoadException
 {
-    FontLoadEx(String s) {
+    public FontLoadEx(String s) {
         super(s);
     }
 
-    FontLoadEx(Throwable cause) {
+    public FontLoadEx(Throwable cause) {
         super(cause);
     }
 }

@@ -1,16 +1,16 @@
-package org.twitshot;
+package org.twitshot.helper;
 import processing.core.*;
 import processing.event.*;
 import java.util.*;
 /**
  * This class just encapsulates operations with the keys. Fluentizes access to them from my library code.
  */
-class MouseManager extends AbstractLibraryHelper
+public class MouseManager extends AbstractLibraryHelper
 {
    
    private Queue<MouseEvent> mMouseEventQueue = new LinkedList<MouseEvent>();
    
-   MouseManager(PApplet parent){
+   public MouseManager(PApplet parent){
       super(parent);
    }
    
@@ -18,7 +18,7 @@ class MouseManager extends AbstractLibraryHelper
     * These may be happening also between the animation thread, 
     * because even capturing is happening also between the threads.
     */
-   void mouseEvent(MouseEvent evt){
+   public void mouseEvent(MouseEvent evt){
        // actually i want to save the event.
       mMouseEventQueue.add(evt);
    }

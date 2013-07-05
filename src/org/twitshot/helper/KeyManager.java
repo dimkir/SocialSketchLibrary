@@ -1,4 +1,5 @@
-package org.twitshot;
+package org.twitshot.helper;
+import org.twitshot.utils.KeyConstants;
 import processing.core.*;
 import processing.event.*;
 /**
@@ -7,7 +8,7 @@ import processing.event.*;
  * 
  * 
  */
-class KeyManager extends AbstractLibraryHelper
+public class KeyManager extends AbstractLibraryHelper
 {
   
    private boolean mPressedMenuExitKey = false;
@@ -21,7 +22,7 @@ class KeyManager extends AbstractLibraryHelper
    private KeyEventHelper khelper;
    
    
-   KeyManager(PApplet papp){
+   public KeyManager(PApplet papp){
       super(papp);
       khelper = new KeyEventHelper();
    }
@@ -46,7 +47,7 @@ class KeyManager extends AbstractLibraryHelper
    
    
    
-   boolean  pressedMenuExitKey()
+   public boolean  pressedMenuExitKey()
    {
       return mPressedMenuExitKey;
    }
@@ -55,7 +56,7 @@ class KeyManager extends AbstractLibraryHelper
     * Returns status of the key. And RESETS the status to false.
     * @return 
     */
-   boolean pressedMenuOpenKey(){
+   public boolean pressedMenuOpenKey(){
       boolean ret = mPressedMenuOpenKey;
      // mPressedMenuOpenKey = false;
       return mPressedMenuOpenKey;
@@ -65,7 +66,7 @@ class KeyManager extends AbstractLibraryHelper
     * Registers and tests the key event
     * what's the heck is this event.
     */
-   void keyEvent(KeyEvent evt){
+   public void keyEvent(KeyEvent evt){
       //printKeyEvent(evt);
        khelper.printKeyEventBar(evt);
       
@@ -92,7 +93,7 @@ class KeyManager extends AbstractLibraryHelper
        return ( evt.getAction() == evt.RELEASE && evt.getKeyCode() == matchingKeyCode );
    }
    
-   boolean pressedTweetKey()
+   public boolean pressedTweetKey()
    {
      return mPressedTweetKey;
    }

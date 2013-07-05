@@ -1,4 +1,13 @@
 package org.twitshot;
+import org.twitshot.ex.LibraryLoadException;
+import org.twitshot.helper.FontBoss;
+import org.twitshot.helper.LibConfig;
+import org.twitshot.helper.Menu;
+import org.twitshot.helper.MouseManager;
+import org.twitshot.helper.KeyManager;
+import org.twitshot.helper.LibraryDrawing;
+import org.twitshot.helper.TweetDirector;
+import org.twitshot.helper.ScreenshotManager;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import processing.core.*;
@@ -112,7 +121,7 @@ public class Twitshot  extends AbstractLibraryBase // the AbstractBase just hold
    * can it throw?
    * @throws TwitterDirectorEx in case error initializing twitterDirector. And MAYBE(?) some other exceptions?
    */
-  private final void initLibrary(PApplet parent) throws LibraryLoadException
+  private void initLibrary(PApplet parent) throws LibraryLoadException
   {
     // *** init all our convenience objects ***
     fontBoss = new FontBoss(parent);

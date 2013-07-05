@@ -1,11 +1,11 @@
-package org.twitshot;
+package org.twitshot.utils;
 /**
  * These are key constants from KeyEvent.java
  * http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/6-b14/java/awt/event/KeyEvent.java
  * TODO: need to fix them somehow them or somehow fix.
  */
 
-class KeyConstants
+public class KeyConstants
 {
 /**
  * An event which indicates that a keystroke occurred in a component.

@@ -1,9 +1,9 @@
-package org.twitshot;
+package org.twitshot.helper;
 import processing.core.*;
 /**
  *  This class is to abstract displaying of the on screen menu.
  */
-class Menu extends AbstractLibraryHelper
+public class Menu extends AbstractLibraryHelper
 {
   
   private LibraryDrawing mLD;
@@ -11,7 +11,7 @@ class Menu extends AbstractLibraryHelper
   private PImage tempImage;
   private FontBoss mFB;
   
-  Menu(PApplet parent, LibraryDrawing ld, FontBoss fb){
+  public Menu(PApplet parent, LibraryDrawing ld, FontBoss fb){
      super(parent);
      mLD = ld;
      mFB = fb; // font boss
@@ -21,13 +21,13 @@ class Menu extends AbstractLibraryHelper
   /**
    * Returns flag.
    */
-  boolean isDisplayedFlag(){
+  public boolean isDisplayedFlag(){
     //TODO: what does this do?
     return mIsDisplayed;
   }
   
   
-  void setDisplayedFlag(boolean vIsDisplayed){
+  public void setDisplayedFlag(boolean vIsDisplayed){
      mIsDisplayed = vIsDisplayed;
   }
   
@@ -35,7 +35,7 @@ class Menu extends AbstractLibraryHelper
   /**
    * Draws to default rednerer, stated in the beginning.
    */
-  void draw(){
+  public void draw(){
     // TODO: implement some drawing of the menu.
       // if temp image is available: then 
       // do things.
@@ -53,7 +53,7 @@ class Menu extends AbstractLibraryHelper
    * to the image (no defensive copying here).
    * @param screenShotOriginalSize  is the client actually live PGraphics???
    */
-    void setImageToDisplay(PImage screenShotOriginalSize) {
+    public void setImageToDisplay(PImage screenShotOriginalSize) {
            tempImage = screenShotOriginalSize;
     }
 }

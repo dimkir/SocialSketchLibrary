@@ -1,4 +1,4 @@
-package org.twitshot;
+package org.twitshot.utils;
 /**
  * Implements concept of FixedStringLog (log of last N String messages)
  * 
@@ -6,7 +6,7 @@ package org.twitshot;
  * size()  : amount of strings available for display
  * maxSize() : maximum amount of strings which will be kept (before overwriting happens)
  */
-class FixedStringLog
+public class FixedStringLog
 {
   private String[] mStringar;
   /**
@@ -31,17 +31,17 @@ class FixedStringLog
    * @param maxSize maximum amout of strings allowed for store
    *        should be above 0
    */
-  FixedStringLog(int maxSize){
+  public FixedStringLog(int maxSize){
      mStringar = new String[maxSize];
      mHeadPointer = 0;
      mLength = 0;
   }
     
-  int size(){
+  public int size(){
      return mLength;
   }
   
-  int capacity(){
+  public int capacity(){
      return mStringar.length;
   }
   
@@ -49,7 +49,7 @@ class FixedStringLog
    * Returns last available index (from the client's view)
    * @return -1 in case there's no available index.
    */
-  int lastIndex(){
+  private int lastIndex(){
      return mLength - 1;
   }
   
@@ -58,7 +58,7 @@ class FixedStringLog
    * Returns string value of given index
    * @throws IllegalArgumetnException if value is not correcgt
    */
-  String get(int i){
+  public String get(int i){
     if ( i < 0 ){
         throw new IllegalArgumentException("Index cannot be negative");
     }
@@ -80,7 +80,7 @@ class FixedStringLog
    * Adds message.
    * Technically it may overwrite the old message.
    */
-  void put(String s){
+  public void put(String s){
        // get next pointer
        assert(mLength <= mStringar.length);
        

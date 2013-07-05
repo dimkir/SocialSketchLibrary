@@ -1,4 +1,4 @@
-package org.twitshot;
+package org.twitshot.utils;
 
 /**
  * This class is used to implement functionality of 
@@ -60,7 +60,7 @@ public class ExponentialBackoff {
      * if last status failure: checks if delay has passed
      * @return 
      */
-    boolean isReadyToRetry(){
+    public boolean isReadyToRetry(){
          
          if(  mLastStatusSuccess ) { return true; }
          
@@ -79,7 +79,7 @@ public class ExponentialBackoff {
      * To be called upon successful connection. So that next time we want reconnect,
      * we do not wait.
      */
-    void registerSuccess(){
+    public void registerSuccess(){
         mLastStatusSuccess = true;
         mLastAttemptTime = millis();
         resetWaitTime(); // 
@@ -97,7 +97,7 @@ public class ExponentialBackoff {
     /**
      * Saves time of failure, and increments the delay.
      */
-    void registerFailure(){
+    public void registerFailure(){
         mLastStatusSuccess = false;
         mLastAttemptTime = millis();
         // obviously we just have to increase delay.

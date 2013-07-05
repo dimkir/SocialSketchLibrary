@@ -1,4 +1,5 @@
-package org.twitshot;
+package org.twitshot.helper;
+import org.twitshot.utils.FixedStringLog;
 import processing.core.*;
 /**
  * Encapsulates library drawing effects 
@@ -10,7 +11,7 @@ import processing.core.*;
  * DO NOT change frame to frame. Thus we have to save and restore them before and after.
  * TODO: this saveing/storing should be implemented yet
  */
-class LibraryDrawing extends AbstractLibraryHelper
+public class LibraryDrawing extends AbstractLibraryHelper
 {
   /**
    * @var C_LINE_PADDING - spacing between lines when .displayStringLog() is called
@@ -21,7 +22,7 @@ class LibraryDrawing extends AbstractLibraryHelper
   private FontBoss mFontBoss;
   
   
-  LibraryDrawing(PApplet p, FontBoss fboss){
+  public LibraryDrawing(PApplet p, FontBoss fboss){
      super(p);
      mFontBoss = fboss;
   }
@@ -78,7 +79,7 @@ class LibraryDrawing extends AbstractLibraryHelper
    * Usually used to show log of operations.
    * @param 
    */
-  void displayStringLog(FixedStringLog fixStrLog, float xx, float yy){
+  public void displayStringLog(FixedStringLog fixStrLog, float xx, float yy){
       float fontSz = mFontBoss.getFontSize();
       
       for(int i = 0 ;  i <  fixStrLog.size() ; i++){
@@ -88,7 +89,7 @@ class LibraryDrawing extends AbstractLibraryHelper
       
   }
   
-  void displayFrameRate(){
+  public void displayFrameRate(){
      int bottomY = sketch().height - 180;
      int bottomX = 20;
      text("Framerate: " + (int) sketch().frameRate, bottomX, bottomY);

@@ -1,11 +1,11 @@
-package org.twitshot;
+package org.twitshot.utils;
 /**
  *  These are constants specified for the xml file.
  * AND!! These are also KEYS which are used by the Map<> data
  * structure inside of others to distinguish which keys are which inside of map.
  *  And also specification can go here.
  */
-interface IConfigXmlSpecification
+public interface IConfigXmlSpecification
 {
    static String C_PROFILE_TAG = "profile";
    

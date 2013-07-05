@@ -1,10 +1,14 @@
-package org.twitshot;
+package org.twitshot.thread;
 import java.io.InputStream;
 import java.util.Queue;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.twitshot.utils.ExponentialBackoff;
+import org.twitshot.ITweetDirectorGate;
+import org.twitshot.utils.IConfigXmlSpecification;
+import org.twitshot.utils.PImage2;
 import processing.core.*;
 import twitter4j.Status;
 import twitter4j.StatusUpdate;
@@ -16,7 +20,7 @@ import twitter4j.conf.ConfigurationBuilder;
  * This is the thread where TweetDirector work is going
  * to happen. (Oauth authenticatin and sending tweets if necesary)
  */
-class TweetThread extends Thread
+public class TweetThread extends Thread
 implements IConfigXmlSpecification // for constants of the credentials fields.
 {
  
@@ -76,7 +80,7 @@ implements IConfigXmlSpecification // for constants of the credentials fields.
   /**
    * Passes TDG for if we want to communicate
    */
-  TweetThread(ITweetDirectorGate twDirectorGate){
+  public TweetThread(ITweetDirectorGate twDirectorGate){
      mTweetDirectorGate = twDirectorGate;
      mExponentialBackoff = new ExponentialBackoff( 2.0f, 30, true);
      pimage2 = new PImage2(100,100); 
@@ -123,7 +127,7 @@ implements IConfigXmlSpecification // for constants of the credentials fields.
    * 
    * @returns NULL in case there's no results.
    */
-  synchronized ResultRecord  pollResultRecord(){
+  synchronized public ResultRecord  pollResultRecord(){
       return mResultRecordQueue.poll();  // Retrieves and removes the head of this queue, or returns null if this queue is empty.
   }
   
@@ -131,7 +135,7 @@ implements IConfigXmlSpecification // for constants of the credentials fields.
   /**
    * Pushes result record to the result queu.
    */
-  synchronized private void pushResultRecord(ResultRecord rr){
+   synchronized private void pushResultRecord(ResultRecord rr){
     mResultRecordQueue.add(rr);
   }
   
@@ -214,7 +218,7 @@ implements IConfigXmlSpecification // for constants of the credentials fields.
    * It is synchronized because we 
    * 
    */
-  synchronized void submitMessage(String msg, PImage img){
+  synchronized public void submitMessage(String msg, PImage img){
       MessageRecord mr = new MessageRecord(msg, img);
       mMessageRecordQueue.add(mr);
       println("Added to messageQueue: " + mr.toString());
@@ -307,7 +311,7 @@ implements IConfigXmlSpecification // for constants of the credentials fields.
    * which is returning whether the thread should continue
    * running or not.
    */
-  synchronized void setRunning(boolean running){
+  synchronized public void setRunning(boolean running){
      mIsRunning = running;
   }
   

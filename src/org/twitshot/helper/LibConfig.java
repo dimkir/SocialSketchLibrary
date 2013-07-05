@@ -1,8 +1,11 @@
-package org.twitshot;
+package org.twitshot.helper;
 import processing.core.*;
 import processing.data.XML;
 import java.util.HashMap;
 import java.util.Map;
+import org.twitshot.ex.ConfigParsingException;
+import org.twitshot.utils.IConfigXmlSpecification;
+
 /**
  *  Loads and stores config info for the library.
  *  Always loads it from config file.
@@ -15,7 +18,7 @@ import java.util.Map;
  * Has convenience getters to fluently access to the data.
  * On failure? - class is unusable. And constructor throws exception, means noone ever receives instance reference.
  */
-class LibConfig extends AbstractLibraryHelper
+public class LibConfig extends AbstractLibraryHelper
   implements IConfigXmlSpecification
   // this is so that we can construct the stringar to return TwitterConfiguration parameters.
 {
@@ -46,7 +49,7 @@ class LibConfig extends AbstractLibraryHelper
    * which USES ENVIRONMENT VARIABLE {@code C_ENVIRONMENT_VARIABLE_NAME} 
    * to retrieve path to the default constructor.
    */
-  LibConfig(PApplet papp) throws ConfigParsingException
+  public LibConfig(PApplet papp) throws ConfigParsingException
   {
      super(papp);
      // now WHERE DO WE GET THE CONFIGURATION FROM?
@@ -64,7 +67,7 @@ class LibConfig extends AbstractLibraryHelper
    *        
    * @throws ConfigParsingException (LibraryLoadException)
    */
-  LibConfig(PApplet papp, String xmlFilename) throws ConfigParsingException
+  public LibConfig(PApplet papp, String xmlFilename) throws ConfigParsingException
   {
      super(papp);
      loadConfig(papp, xmlFilename);   // this one throws ConfigParsingException
@@ -222,7 +225,7 @@ class LibConfig extends AbstractLibraryHelper
    * Returns Map<String,String> with the twitter configuration 
    * data like (APP_KEY, APP_SECRET) and all this stuff.
    */
-    Map<String,String> getTwitterConfiguration(){
+    public Map<String,String> getTwitterConfiguration(){
     Map<String, String> configMap = new HashMap<String, String>();
     String[] keys = { C_OAUTH_SECRET, C_OAUTH_TOKEN, C_CONSUMER_SECRET, C_CONSUMER_KEY };
     for( String key : keys){

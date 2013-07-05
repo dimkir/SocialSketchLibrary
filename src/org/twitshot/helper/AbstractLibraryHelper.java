@@ -1,4 +1,4 @@
-package org.twitshot;
+package org.twitshot.helper;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,13 +8,13 @@ import processing.core.*;
  * This is just abstract superclass which all library-helpers are inheriting.
  * Incuim it only obligates to implements toString();
  */
-abstract class AbstractLibraryHelper extends AbstractLibraryBase // incuim the base only saves .parent and defines println()
+abstract class AbstractLibraryHelper// extends AbstractLibraryBase // incuim the base only saves .parent and defines println()
 {
-  //private PApplet mParent; 
+  private PApplet mParent; 
    
   
   AbstractLibraryHelper(PApplet parent){
-    super(parent);
+    //super(parent);
     
      //mParent = parent;
   }
@@ -50,10 +50,15 @@ abstract class AbstractLibraryHelper extends AbstractLibraryBase // incuim the b
       } catch (IOException ex) {
           println("AbstractLibraryHelper::testReadingFileFromResources: " + ex.getMessage());
       }
-      
-      
-      
-      
   }
+  
+  
+  /**
+   * Fluentizer and evolutionary delegate.
+   * Assumes this.parent is set in the current implementation.
+   */
+  protected void println(String s){
+     mParent.println(s);
+  }     
  
 }

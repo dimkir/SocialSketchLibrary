@@ -1,13 +1,14 @@
-package org.twitshot;
+package org.twitshot.helper;
 import java.io.IOException;
 import java.io.InputStream;
+import org.twitshot.ex.FontLoadEx;
 import processing.core.*;
 /**
  *  Just fancy name class which encapsulates operations with fonts.
  * 
  * Fonts will be included into JAR. So far works only with vlw-fonts.
  */
-class FontBoss extends AbstractLibraryHelper
+public class FontBoss extends AbstractLibraryHelper
 {
 //  private static final String C_FONT_PATH_WITHIN_JAR = "/fonts/commando.ttf";
 //  private static final String C_FONT_PATH_WITHIN_JAR = "/fonts/28 Days Later.ttf";
@@ -24,7 +25,7 @@ class FontBoss extends AbstractLibraryHelper
    * During normal usage of the library, as the font is packaged inside of jar, 
    * this exception shouldn't be thrown.
    */
-  FontBoss(PApplet papp) throws FontLoadEx{
+  public FontBoss(PApplet papp) throws FontLoadEx{
      super(papp);
      testReadingFileFromResources("/res/strings/angelina.xml");
      initFont();

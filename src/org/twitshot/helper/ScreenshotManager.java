@@ -1,4 +1,4 @@
-package org.twitshot;
+package org.twitshot.helper;
 import processing.core.*;
 /**
  * Just encapsulates saving of the current screen of the sketch. (So that we can tweet it later).
@@ -7,7 +7,7 @@ import processing.core.*;
  * 
  * Also how do we want to make the shrunk size of the image?  How does it know which is going to be the "shrunk" version of the image?
  */
-class ScreenshotManager extends AbstractLibraryHelper
+public class ScreenshotManager extends AbstractLibraryHelper
 {
   private PImage mScreenshot;  // this needs to be created at the first drawing loop. As when library is called the size of screen may not be known yet.
   private PImage mThumbnailImage; // ??? this is screenshot half size.
@@ -18,7 +18,7 @@ class ScreenshotManager extends AbstractLibraryHelper
    * because this is going to be "per-frame" operation, we want to allocate memory once and forever.
    * use allocateMemoryFor() method 
    */
-  ScreenshotManager(PApplet papp){
+  public ScreenshotManager(PApplet papp){
      super(papp);
   }
 
@@ -28,8 +28,8 @@ class ScreenshotManager extends AbstractLibraryHelper
    * we only can be sure of the size of screen when first frame is drawn (not when sketch is setup)
    */
   private void allocateMemoryFor(int width, int height){
-      mScreenshot = mParent.createImage(width, height, C_IMAGE_COLOR_MODE); 
-      mThumbnailImage = mParent.createImage(width/2, height/2, C_IMAGE_COLOR_MODE);
+      mScreenshot = sketch().createImage(width, height, C_IMAGE_COLOR_MODE); 
+      mThumbnailImage = sketch().createImage(width/2, height/2, C_IMAGE_COLOR_MODE);
   }
   
   private void allocateMemoryFor(PGraphics pg){
@@ -40,7 +40,7 @@ class ScreenshotManager extends AbstractLibraryHelper
    * Allocates memory if it is not yet allocated. This is a convenience method, can be called from each draw.
    * It only allocates memory if PImage is null.
    */
-  void allocateMemoryIfNotAllocatedFor(PGraphics pg){
+  public void allocateMemoryIfNotAllocatedFor(PGraphics pg){
     if ( mScreenshot == null ){
        allocateMemoryFor(pg);
     }
@@ -49,7 +49,7 @@ class ScreenshotManager extends AbstractLibraryHelper
   /**
    * Saves image from graphics surface (what sketch has drawn)
    */
-  void saveImageFrom(PImage imageOrGraphicsSurfaceWhichToSave){
+  public void saveImageFrom(PImage imageOrGraphicsSurfaceWhichToSave){
      PImage img  = imageOrGraphicsSurfaceWhichToSave;
      assertDimensionsSame(mScreenshot, img);        // is it throwing anything?
      mScreenshot.copy(img, 0, 0, img.width ,img.height, 0, 0, img.width, img.height); // ? what happens if the dimensions are wrong?
@@ -63,7 +63,7 @@ class ScreenshotManager extends AbstractLibraryHelper
    * Gets original size screenshot. 
    * There should be a method to retrive the "shrunk" size of the screenshot. (may we need it for displaying).
    */
-  PImage getOriginalSize(){
+  public PImage getOriginalSize(){
     return mScreenshot;
   }
   
@@ -71,7 +71,7 @@ class ScreenshotManager extends AbstractLibraryHelper
    * Returns "thumbnail" version of the image.
    * @return 
    */
-  PImage getThumbnailSize(){
+  public PImage getThumbnailSize(){
       return mThumbnailImage;
   }
   

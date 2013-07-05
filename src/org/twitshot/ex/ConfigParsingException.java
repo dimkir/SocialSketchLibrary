@@ -1,4 +1,4 @@
-package org.twitshot;
+package org.twitshot.ex;
 /**
  *  Is thrown if there's error when LibConfig is loading.
  * TODO: rather should be named ConfigLoadException , because
@@ -6,7 +6,7 @@ package org.twitshot;
  */
 public class ConfigParsingException extends LibraryLoadException
 {
-  ConfigParsingException(String s){
+  public ConfigParsingException(String s){
     super(s);
   }
 }

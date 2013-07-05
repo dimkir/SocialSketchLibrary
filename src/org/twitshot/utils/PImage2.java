@@ -1,4 +1,4 @@
-package org.twitshot;
+package org.twitshot.utils;
 
 import java.awt.image.BufferedImage;
 import java.io.BufferedOutputStream;

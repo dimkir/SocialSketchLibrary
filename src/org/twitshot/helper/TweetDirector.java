@@ -1,7 +1,12 @@
-package org.twitshot;
+package org.twitshot.helper;
 // import some twitter library here.
 
 import java.util.Map;
+import org.twitshot.utils.FixedStringLog;
+import org.twitshot.ITweetDirectorGate;
+import org.twitshot.ex.TweetDirectorEx;
+import org.twitshot.thread.TweetThread;
+import org.twitshot.utils.IConfigXmlSpecification;
 import processing.core.*;
 /**
  * This class encapsulates and fluentizes operations with twitter.
@@ -11,7 +16,7 @@ import processing.core.*;
  * attempting to perform OAuth authentication, the authentication is 
  * only happening when .start() method was called.
  */
-class TweetDirector extends AbstractLibraryHelper
+public class TweetDirector extends AbstractLibraryHelper
   implements IConfigXmlSpecification
 {
   
@@ -29,7 +34,7 @@ class TweetDirector extends AbstractLibraryHelper
    private TweetThread mTweetThread; 
   
    /**
-    * What's the contract? In case the credendials contain "invalid" information (like gibberish or 
+    * What's the contract? In case the credentials contain "invalid" information (like gibberish or 
     * unauthorized id's?
     * @param parent reference to Sketch
     * @param logOnCredentials is Map which is providing twitter log on credentials. 
@@ -38,7 +43,7 @@ class TweetDirector extends AbstractLibraryHelper
     * @throws TweetDirectorEx some kind of exception saying that tweet director couldn't initialize.
     * 
     */
-   TweetDirector(PApplet parent, Map<String,String> logOnCredentials) throws TweetDirectorEx
+   public TweetDirector(PApplet parent, Map<String,String> logOnCredentials) throws TweetDirectorEx
    {
       super(parent);
       // make quick verification of the credentials. 
@@ -57,7 +62,7 @@ class TweetDirector extends AbstractLibraryHelper
    /**
     *  Tweets the message (actually submits to thread to tweet)
     */
-   void tweetTheMessage(String tweetMsg, PImage img){
+   public void tweetTheMessage(String tweetMsg, PImage img){
         mTweetThread.submitMessage(tweetMsg, img);
         log("Submitted message [" + tweetMsg + "] and PImage");
         
@@ -73,7 +78,7 @@ class TweetDirector extends AbstractLibraryHelper
     /**
      *  Starts the thread which is going to send tweets asynchronousely.
      */
-    void start(){
+    public void start(){
         // i probably should pass some parametes to the thread???
         mTweetThread = new TweetThread(new TweetDirectorGate());
         mTweetThread.start();
@@ -82,7 +87,7 @@ class TweetDirector extends AbstractLibraryHelper
     /**
      * Is called by main library class to shutdown worker thread.
      */
-    void shutdown()
+    public void shutdown()
     {
        // ?? shutdown background thread.. but what do we do in case the tweeting process is still on?
       if  ( mTweetThread != null ){
@@ -102,7 +107,7 @@ class TweetDirector extends AbstractLibraryHelper
      *           is it actually a good structure to return? because it appears that we only need the few latest items. This can be
      *           implemented with String[], but we also need two more variables "qty and start". this way we will be able to contain log messages in fixed size-array.
      */
-    FixedStringLog getLogObject(){
+    public FixedStringLog getLogObject(){
       // should there always be at least one message in the log??
       return mDirectorLog;
     }
