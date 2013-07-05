@@ -20,7 +20,7 @@ public class TweetThreadTest extends TestCase {
     
     public TweetThreadTest(String testName) {
         super(testName);
-        mTwDirectorGate = new TestTweetDirectorGate();
+        mTwDirectorGate = new FakeTweetDirectorGate();
     }
     
     @Override
