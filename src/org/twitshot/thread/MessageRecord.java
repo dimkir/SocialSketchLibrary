@@ -7,9 +7,9 @@ import processing.core.PImage;
  * When TweetThread is queing request to
  * tweet, it wraps them in this MessageRecord.
  */
-class MessageRecord {
-    String msg;
-    PImage img;
+public class MessageRecord {
+    public String msg;
+    public PImage img;
 
     /**
      *
