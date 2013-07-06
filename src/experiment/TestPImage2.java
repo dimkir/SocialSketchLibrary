@@ -4,7 +4,7 @@
  */
 package experiment;
 
-import org.twitshot.utils.PImage2;
+import org.sketchshot.utils.PImage2;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
