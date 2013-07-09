@@ -130,7 +130,7 @@ implements IConfigXmlSpecification // for constants of the credentials fields.
    * Pushes result record to the result queu.
    */
    synchronized private void pushResultRecord(ResultRecord rr){
-    mResultRecordQueue.add(rr);
+        mResultRecordQueue.add(rr);
   }
   
   
@@ -191,7 +191,7 @@ implements IConfigXmlSpecification // for constants of the credentials fields.
    * Also keep in mind that this method is synchronized() as 
    * we only are allowed to access the queue from synchronized methods.
    */
-  synchronized public boolean isQueueEmpty(){
+  synchronized public boolean isJobQueueEmpty(){
       return (mSmartQueue.itemsOnQueue() == 0);
   }
   
@@ -275,6 +275,8 @@ implements IConfigXmlSpecification // for constants of the credentials fields.
          else{
              // success. What do we do with success??
              logSuccessfulShare(mr);
+             ResultRecord rr = new ResultRecord(mr, "success", 0);
+             pushResultRecord(rr);
          }
       }
       else{
