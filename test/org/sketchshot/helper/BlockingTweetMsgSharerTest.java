@@ -4,6 +4,8 @@ import junit.framework.TestCase;
 import org.sketchshot.ProxySetter;
 import org.sketchshot.SysoutLogger;
 import org.sketchshot.TwitterCredentials;
+import org.sketchshot.thread.IBlockingMessageSharer;
+import org.sketchshot.thread.MessageRecord;
 
 /**
  *
@@ -51,7 +53,9 @@ public class BlockingTweetMsgSharerTest extends TestCase {
         System.out.println("\n** testInitBlocking_VALID_CREDENTIALS");        
         BlockingTweetMsgSharer twSh = new BlockingTweetMsgSharer(new SysoutLogger());
         int rez = twSh.initBlocking(TwitterCredentials.getValidCredentials());
+        println("Returned result: " + rez);
         assert(rez == 0);
+        assert(rez == twSh.SUCCESS);
     }
     
     
@@ -95,15 +99,108 @@ public class BlockingTweetMsgSharerTest extends TestCase {
     /**
      * Test of shareMessageBlocking method, of class BlockingTweetMsgSharer.
      */
-    public void testShareMessageBlocking_TEST_VALID_MESSAGE() {
-        
+    public void testShareMessageBlocking_TEST_VALID__TEXT_MESSAGE() {
+        System.out.println("\n** testInitBlocking_TEST_VALID__TEXT_MESSAGE");         
+        BlockingTweetMsgSharer twSh = getInitializedSharer();
+        String tweet = "This is test message: " + millis();
+        MessageRecord mr = new MessageRecord(tweet, null);
+        int rez  = twSh.shareMessageBlocking(mr);
+        assert(rez >= 0);
+        assert(rez == twSh.SUCCESS);
     }
+    
+    
+    /**
+     * Test of shareMessageBlocking method, of class BlockingTweetMsgSharer.
+     */
+    public void DISABLED_testShareMessageBlocking_TEST_SIMULATE_NETWORK_ERROR_FAKE_PROXY() {
+        fail("This one doesn't seem to work properly. Seems like proxy change after authentication doesn't influence antythinng");
+        System.out.println("\n** testInitBlocking_TEST_SIMULATE_NETWORK_ERROR_FAKE_PROXY");         
+        BlockingTweetMsgSharer twSh = getInitializedSharer();
+        ProxySetter.setFakeProxy();
+        String tweet = "This is test message: " + millis();
+        MessageRecord mr = new MessageRecord(tweet, null);
+        int rez  = twSh.shareMessageBlocking(mr);
+        ProxySetter.unsetFakeProxy();
+        assert(rez < 0);
+        assert(rez == IBlockingMessageSharer.ERROR_RETRIABLE);
+        
+    }    
+    
+
+    /**
+     * Test of shareMessageBlocking method, of class BlockingTweetMsgSharer.
+     */
+    public void testShareMessageBlocking_TEST_TOO_LONG__TEXT_MESSAGE() {
+        System.out.println("\n** testInitBlocking_TEST_TOO_LONG__TEXT_MESSAGE");         
+        BlockingTweetMsgSharer twSh = getInitializedSharer();
+        String tweet = "This is TOOOOOOOOOOOOOOOOOOOOOOOOOO LOOOOOOOOOOOONG " + 
+                        "TOOOOOOOOOOOOOOOOOOOOOO LONG" + 
+                        "TOOOOOOOOOOOOOOOOOOOOOO LONG" + 
+                        "TOOOOOOOOOOOOOOOOOOOOOO LONG" + 
+                        " test message: " + millis();
+        MessageRecord mr = new MessageRecord(tweet, null);
+        int rez  = twSh.shareMessageBlocking(mr);
+        assert(rez < 0);
+        assert(rez == twSh.ERROR_FATAL);
+    }    
     
     /**
      * Tests what happens when duplicate message is tweeted to
      * twitter.
      */
     public void testShareMessageBlocking_TEST_DUPLICATE_MESSAGE(){
+        System.out.println("\n** testInitBlocking_TEST_DUPLICATE_MESSAGE");         
+        BlockingTweetMsgSharer twSh = getInitializedSharer();
+        String tweet = "This is test message: " + millis();
+        MessageRecord mr = new MessageRecord(tweet, null);
         
+        
+        // the question here: CAN I REINSERT THE MESSAGE RECORD???
+        int rez  = twSh.shareMessageBlocking(mr);
+        if ( rez < 0 ){
+            throw new IllegalStateException("First tweet should have passed successfully" + 
+                    "We didn't get to assertion even.");
+        }
+        
+        MessageRecord duplicateMr = new MessageRecord(tweet, null);
+        rez = twSh.shareMessageBlocking(duplicateMr); // same message?
+        assert(rez < 0);
+        assert(rez == BlockingTweetMsgSharer.ERROR_FATAL);
+    }
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    /**
+     * Just returns initialized (with valid credentials) sharer instance
+     */
+    private BlockingTweetMsgSharer getInitializedSharer() {
+        BlockingTweetMsgSharer twSh = new BlockingTweetMsgSharer(new SysoutLogger());
+        int rez = twSh.initBlocking(TwitterCredentials.getValidCredentials());
+        if ( rez != BlockingTweetMsgSharer.SUCCESS ){
+            throw new IllegalStateException("Some kind of mistake. these are valid credentials and" +
+                    " they should have resulted in successful log in");
+        }
+        return twSh;
+    }
+
+    private long millis() {
+        return System.currentTimeMillis();
+    }
+
+    private void println(String string) {
+        System.out.println(string);
     }
 }
