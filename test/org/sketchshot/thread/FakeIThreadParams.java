@@ -25,6 +25,7 @@ implements
     
     private int PARAM_FLAG = CR_VALID; // -1 uninitialized.
     private final ILogging mLogger;
+    private IBlockingMessageSharer mBlockingSharer;
 
     /**
      * Initializes params to given type of credentials and DEFAULT Sysout logger.
@@ -113,9 +114,13 @@ implements
     }
 
     
+    void setBlockingSharer(IBlockingMessageSharer sharer){
+        mBlockingSharer = sharer;
+    }
+    
     @Override
     public IBlockingMessageSharer getBlockingMessageSharer() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return mBlockingSharer;
     }
     
 }

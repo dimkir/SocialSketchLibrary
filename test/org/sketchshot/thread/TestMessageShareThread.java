@@ -1,5 +1,7 @@
 package org.sketchshot.thread;
 
+import java.util.ArrayList;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import junit.framework.TestCase;
@@ -36,21 +38,41 @@ public class TestMessageShareThread extends TestCase {
      */
     public void testInitialize()    {
         
-        final IThreadParameters threadParams = new FakeIThreadParams(FakeIThreadParams.CR_VALID);
+        final String[] testMessages = generateTestMessages(100);
+        final ArrayList<String> messagesSubmittedToBlockingSharer = new ArrayList<String>();
+        
+        final FakeIThreadParams threadParams = new FakeIThreadParams(FakeIThreadParams.CR_VALID);
+        threadParams.setBlockingSharer(new IBlockingMessageSharer() {
+
+            @Override
+            public int initBlocking(Map<String, String> cred) {
+                return this.SUCCESS;
+            }
+
+            @Override
+            public int shareMessageBlocking(MessageRecord mr) {
+                messagesSubmittedToBlockingSharer.add(mr.msg);
+                return this.SUCCESS;
+            }
+        });
+        
         Thread testThread = new Thread() {
             @Override
             public void run() {
                     MessageShareThread msThread = new MessageShareThread(threadParams);
                     msThread.start();
-                    msThread.submitMessage("This is test message to share " + millis() , null);
-                    while ( true ){
-                        mySleep(100);
-                        ResultRecord rez = msThread.pollResultRecord();
-                        if ( rez != null){
-                           // we got succes
-                            System.out.println("Successfully polled success result saying about message.");
-                        }
+                    for(String s : testMessages){
+                        msThread.submitMessage( s, null);
                     }
+                    
+//                    while ( true ){
+//                        mySleep(100);
+//                        ResultRecord rez = msThread.pollResultRecord();
+//                        if ( rez != null){
+//                           // we got succes
+//                            System.out.println("Successfully polled success result saying about message.");
+//                        }
+//                    }
             }
             
             /** just shorthand */
@@ -72,6 +94,9 @@ public class TestMessageShareThread extends TestCase {
         if ( testThread.isInterrupted() ){
             fail("Test took too long to complete. This is wrong test message anyways. it doesn't work like this..");
         }
+        
+        boolean allMessagesEqual = compareStringars(testMessages, messagesSubmittedToBlockingSharer);
+        assert(allMessagesEqual);
         
 
         
@@ -123,5 +148,38 @@ public class TestMessageShareThread extends TestCase {
     
     private long millis(){
          return System.currentTimeMillis();
+    }
+
+    /**
+     * Generates n test messages for trying with MessageSharingThread.
+     * @param n
+     * @return 
+     */
+    private String[] generateTestMessages(int n) {
+        String[] msg = new String[n];
+        for(int i = 0 ; i < n ; i++){
+            msg[i] = "This is test message " + i;
+        }
+        return msg;
+    }
+
+    /**
+     * Compares that stingar and arlis have equal elements.
+     * @param strar
+     * @param arl
+     * @return 
+     */
+    private boolean compareStringars(String[] strar, ArrayList<String> arl) {
+        if ( strar.length != arl.size()){
+            return false;
+        }
+        for(int i = 0 ; i < strar.length ; i++){
+            String s = strar[i];
+            String a = arl.get(i);
+            if ( ! s.equals(a) ){
+                return false;
+            }
+        }
+        return true;
     }
 }
