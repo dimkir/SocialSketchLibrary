@@ -87,15 +87,16 @@ class BlockingTweetMsgSharer implements IBlockingMessageSharer {
             println("Trying veryfy credentials");
             tw.verifyCredentials();
             println("Registered successfully, userid: " + tw.getId());
-            return 0; // success
+            return SUCCESS; // success
 
         } catch (TwitterException twex) {
             if (twex.getStatusCode() == 401) {
                 println("Cannot authenticate, probably wrong credentials: " + twex.getMessage());
+                return ERROR_FATAL; // error
             } else {
                 println("Some other error attempting authenticate twitter: " + twex.getErrorMessage());
+                return ERROR_RETRIABLE; // error
             }
-            return -1; // error
         }
     }
 
@@ -107,7 +108,7 @@ class BlockingTweetMsgSharer implements IBlockingMessageSharer {
      * @return ?? should return some success status? no?
      */
     @Override
-    public void shareMessageBlocking(MessageRecord mr) {
+    public int shareMessageBlocking(MessageRecord mr) {
         try {
             if (mr.img == null) {
                 println("TweetThread::tweetMessageBlocking(): " + mr.msg + " image: null");
@@ -122,9 +123,12 @@ class BlockingTweetMsgSharer implements IBlockingMessageSharer {
                 println("Updated successfully, status: " + rez.toString());
                 //println("TweetThread::tweetMessageBlocking(): " + mr.msg + " image:" + mr.img.toString());
             }
+            return SUCCESS; // SUCCESS
         } catch (TwitterException ex) {
+            // TODO: add split between retriable and non-retriable errors
             Logger.getLogger(MessageShareThread.class.getName()).log(Level.SEVERE, null, ex);
             println("Twitter exception: " + ex.getMessage());
+            return ERROR_RETRIABLE;
         }
     }
 
