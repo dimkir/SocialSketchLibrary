@@ -11,7 +11,16 @@ public class ScreenshotManager extends AbstractLibraryHelper
 {
   private PImage mScreenshot;  // this needs to be created at the first drawing loop. As when library is called the size of screen may not be known yet.
   private PImage mThumbnailImage; // ??? this is screenshot half size.
-  private final int C_IMAGE_COLOR_MODE =  PApplet.ARGB; // PApplet.ARGB; because screen is not image, it has no opacity! (Sure, what are you to see if the screen is transparent? wall behind screen?)
+  private final int C_IMAGE_COLOR_MODE =  PApplet.RGB; // PApplet.ARGB; because screen is not image, it has no opacity! 
+                                                       // (Sure, what are you to see if the screen is transparent? wall behind screen?)
+                                                       // technically this should be RGB, as we don't have opacity parameter on the screen
+                                                       // can change it later and see if it improves performance.
+  
+  /** This flag is set to true inside of saveFrame(). Upon the first run it is empty */
+  private boolean mHasSavedFrame = false;
+  
+  /** This is memory where PreviousFrame will be kept */
+  private PImage mPreviousFrame;
   
   /**
    * We just create object, but no memory yet is allocated for image.
@@ -27,13 +36,13 @@ public class ScreenshotManager extends AbstractLibraryHelper
    * there will be null-pointer exception. This allocation is as separate method (not in constructor), because
    * we only can be sure of the size of screen when first frame is drawn (not when sketch is setup)
    */
-  private void allocateMemoryFor(int width, int height){
-      mScreenshot = sketch().createImage(width, height, C_IMAGE_COLOR_MODE); 
-      mThumbnailImage = sketch().createImage(width/2, height/2, C_IMAGE_COLOR_MODE);
+  private PImage allocateMemoryFor(int width, int height){
+      PImage img = sketch().createImage(width, height, C_IMAGE_COLOR_MODE); 
+      return img;
   }
   
-  private void allocateMemoryFor(PGraphics pg){
-    allocateMemoryFor(pg.width, pg.height);
+  private PImage allocateMemoryFor(PGraphics pg){
+    return allocateMemoryFor(pg.width, pg.height);
   }
   
   /**
@@ -42,8 +51,17 @@ public class ScreenshotManager extends AbstractLibraryHelper
    */
   public void allocateMemoryIfNotAllocatedFor(PGraphics pg){
     if ( mScreenshot == null ){
-       allocateMemoryFor(pg);
+       mScreenshot = allocateMemoryFor(pg);
     }
+    
+    if ( mThumbnailImage == null){
+        mThumbnailImage = allocateMemoryFor(pg.width/2, pg.height /2);
+    }
+    
+    if ( mPreviousFrame == null){
+        mPreviousFrame = allocateMemoryFor(pg);
+    }
+    
   }
   
   /**
@@ -107,6 +125,29 @@ public class ScreenshotManager extends AbstractLibraryHelper
     private void copyToThumbnail() {
         mThumbnailImage.copy(mScreenshot, 0, 0, mScreenshot.width, mScreenshot.height,
                                               0, 0, mThumbnailImage.width, mThumbnailImage.height);
+    }
+
+    public void saveFrame(PGraphics g) {
+        mHasSavedFrame = true;
+        int w = g.width;
+        int h = g.height;
+        
+        mPreviousFrame.copy(g, 0, 0 , w, h, 0 ,0 , w, h);
+    }
+
+    /**
+     * This one allows only one single read. After
+     * reading it resets hasSavedFrame flag,
+     * so that it is not updated until again saved.
+     * @return 
+     */
+    public PImage getSavedFrame() {
+        mHasSavedFrame = false;
+        return mPreviousFrame;
+    }
+
+    public boolean hasSavedFrame() {
+        return mHasSavedFrame;
     }
   
   
