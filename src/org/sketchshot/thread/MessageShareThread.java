@@ -22,27 +22,36 @@ implements IConfigXmlSpecification // for constants of the credentials fields.
     
   private IThreadParameters mTweetDirectorGate;
   
+//  /**
+//   * @var mMessageRecordQueu this one holds queue of tweets to be sent. As it will be accessed from
+//   * different threads, we only access it from 2 synchronized methods.
+//   * .submitMessage(??)
+//   * .popMessage()
+//   * No "unsynched" access from anywhere 
+//   * else.
+//   */
+//  private Queue<MessageRecord> mMessageRecordQueue = new LinkedList<MessageRecord>(); // is this good implemenation of
+//  // the queue?
+  
   /**
-   * @var mMessageRecordQueu this one holds queue of tweets to be sent. As it will be accessed from
-   * different threads, we only access it from 2 synchronized methods.
-   * .submitMessage(??)
-   * .popMessage()
-   * No "unsynched" access from anywhere 
-   * else.
+   * This is the queue which holds messages for the thread to feed on.
+   * As messages implement IPostponable interface, they will be scheduled
+   * in a proper way. 
+   * If polling message returns null, it doesn't mean that there's no messges in the 
+   * queue. It may mean that they're not scheduled yet for appearance.
    */
-  private Queue<MessageRecord> mMessageRecordQueue = new LinkedList<MessageRecord>(); // is this good implemenation of
-  // the queue?
+  private SmartQueue<MessageRecord> mSmartQueue = new SmartQueue<MessageRecord>();
   
   
   /**
-   * @var mResultRecordQueue - this is where we want to store the result.
+   * This is where we want to store the result.
    * of the tweet. And this one will be polled every frame or so to check if everything is ok.
    */
   private Queue<ResultRecord> mResultRecordQueue = new LinkedList<ResultRecord>(); 
   
   
   /**
-   * @var mIsRunning This is flag of whether we should continue iterating thread or finish it.
+   * This is flag of whether we should continue iterating thread or finish it.
    * SYNCHRONIZING: this variable only accessed from synched methods.
    * .getRunning()
    * .setRunning(??)
@@ -112,7 +121,7 @@ implements IConfigXmlSpecification // for constants of the credentials fields.
    * 
    * @returns NULL in case there's no results.
    */
-  synchronized ResultRecord  pollResultRecord(){
+  synchronized public ResultRecord  pollResultRecord(){
       return mResultRecordQueue.poll();  // Retrieves and removes the head of this queue, or returns null if this queue is empty.
   }
   
@@ -184,7 +193,7 @@ implements IConfigXmlSpecification // for constants of the credentials fields.
    */
   synchronized public void submitMessage(String msg, PImage img){
       MessageRecord mr = new MessageRecord(msg, img);
-      mMessageRecordQueue.add(mr);
+      mSmartQueue.push(mr);
       println("Added to messageQueue: " + mr.toString());
   }
   
@@ -194,10 +203,8 @@ implements IConfigXmlSpecification // for constants of the credentials fields.
    *  @returns NULL if message queue is empty
    */
   synchronized private MessageRecord popMessage(){
-    if ( mMessageRecordQueue.isEmpty() ){
-       return null;
-    }
-    return mMessageRecordQueue.poll();  // poll() returns null if
+     return mSmartQueue.pop();
+      // poll() returns null if
                                         // queue is empty
   }
   
@@ -205,33 +212,55 @@ implements IConfigXmlSpecification // for constants of the credentials fields.
   
   /**
    * Peform all the job we have to peform in this iteration.
+   * What's our policy in terms of failures on send?
+   * Honestly I have no chance to know what kind of errors can be there
+   * thus i need to implement SOME (ANY) policy and then test it and see
+   * how it fits.
    */
   private void iterate(){
       // poll tweet queue
       MessageRecord mr = popMessage(); // here we can check if messages are avaialble.
+      // what happens here is that we pop the message,
+      // and if it fails to send the message, the message
+      // will go off the queue.
+      // this may be caused by serious causes (authentication) or by temporary
+      // (like problem with wifi-signal or internet access point is temporarily down).
      
       //TODO: this is just dummy stub. need to implement error checking and other things.
       
       if ( mr != null){
          // TODO: need to add return value to this method.
-         blockingMessageSharer.shareMessageBlocking(mr);
+         int rez = blockingMessageSharer.shareMessageBlocking(mr);
+         if ( rez < 0 ){
+             // some kind of failure
+             
+             // we want to reintroduce the message.
+             if ( rez == IBlockingMessageSharer.ERROR_RETRIABLE ){
+                 // we need to insert item back into queue, but make sure it doesn't appear
+                 // up until delay has passed.
+                 logFailedShare(mr, "Retriable error has happened, we will retry");
+                 
+             }
+             else if ( rez == IBlockingMessageSharer.ERROR_FATAL ){
+                 String errorMsg = "Non retriable error has happened, we will report this as failed result";
+                 logFailedShare(mr, errorMsg );
+                 ResultRecord rr  = new ResultRecord(mr, errorMsg, -1);
+                 pushResultRecord(rr);
+             }
+             else{
+                 throw new IllegalStateException("Logic error, negative result of " + 
+                                    "shareMessageBlocking() can only be ERROR_FATAL or ERROR_RETRIABLE. Now:" + rez );
+             }
+         }
+         else{
+             // success. What do we do with success??
+             logSuccessfulShare(mr);
+         }
       }
       else{
-         println("TweetThread::iterate(): no messages in queue");
+         println("MessageShareThread::iterate(): no messages in queue");
       }
-//      ?? = tweetMessageBlocking(mr); // performs this
-//      // ? what can it return?? again there may be different reasons for 
-//      // not being able to perform the thing... 
-//      // like connection error or smth.
-//      // add succees to the queue of successes
-//      if ( ??? 
-//      
-//      pushResultRecord(
-
-      
   }
-  
-
   
   
   /**
@@ -276,5 +305,28 @@ implements IConfigXmlSpecification // for constants of the credentials fields.
   private Map<String, String> getTwitterCredentials() {
     return mTweetDirectorGate.getCredentials();
   }
+
+  
+  
+  
+  /**
+   * Just logs to console (incuim).
+   * Basically we want just to "log" successful share.
+   * 
+   */
+  private void logSuccessfulShare(MessageRecord mr) {
+     // get that  
+      println("Thead: successfully shared message: " + mr.toString());
+  }
+
+  /**
+   * Just logs information, which happens inside of iterate() when
+   * there's a failed share.
+   * @param mr
+   * @param errorMsg 
+   */
+    private void logFailedShare(MessageRecord mr, String errorMsg) {
+        println("Thread:iterate(): attempt to perform blockingshare of the " + mr.toString() + " has failed with error: " + errorMsg);
+    }
 
 }
