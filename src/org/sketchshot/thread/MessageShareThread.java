@@ -204,10 +204,14 @@ implements IConfigXmlSpecification // for constants of the credentials fields.
    * It is synchronized because we 
    * 
    */
-  synchronized public void submitMessage(String msg, PImage img){
+  public void submitMessage(String msg, PImage img){
       MessageRecord mr = new MessageRecord(msg, img);
-      mSmartQueue.push(mr);
+      pushMessage(mr);
       println("Added to messageQueue: " + mr.toString());
+  }
+  
+  synchronized private void pushMessage(MessageRecord mr){
+      mSmartQueue.push(mr);
   }
   
   
@@ -252,6 +256,9 @@ implements IConfigXmlSpecification // for constants of the credentials fields.
                  // we need to insert item back into queue, but make sure it doesn't appear
                  // up until delay has passed.
                  logFailedShare(mr, "Retriable error has happened, we will retry");
+                 // we will retry in 5 seconds
+                 // push message back to the smart queue with 5 seconds delay
+                 pushMessage(mr.getCopy(millis() + 5000));
                  
              }
              else if ( rez == IBlockingMessageSharer.ERROR_FATAL ){
@@ -340,6 +347,10 @@ implements IConfigXmlSpecification // for constants of the credentials fields.
    */
     private void logFailedShare(MessageRecord mr, String errorMsg) {
         println("Thread:iterate(): attempt to perform blockingshare of the " + mr.toString() + " has failed with error: " + errorMsg);
+    }
+
+    private long millis() {
+        return System.currentTimeMillis();
     }
 
 }

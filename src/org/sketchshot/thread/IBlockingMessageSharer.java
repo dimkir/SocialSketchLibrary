@@ -14,9 +14,9 @@ public interface IBlockingMessageSharer {
      * which means that connection was down or smth - then we 
      * can reschedule the message for later.
      */
-    final int SUCCESS = 0;
-    final int ERROR_FATAL = -2;
-    final int ERROR_RETRIABLE = -3;
+    public final int SUCCESS = 0;
+    public final int ERROR_FATAL = -2;
+    public final int ERROR_RETRIABLE = -3;
     
     /**
      * Attempts to initialize (authenticate the MessageSharer
