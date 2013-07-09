@@ -28,6 +28,10 @@ abstract class AbstractLibraryHelper
      return mParent;
   }
   
+  protected long millis(){
+     return System.currentTimeMillis();
+  }
+  
   
   /**
    * This is test method, we try here reading a resource 
