@@ -1,6 +1,8 @@
 package org.sketchshot.thread;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -56,6 +58,8 @@ public class TestMessageShareThread extends TestCase {
             }
         });
         
+        
+        
         Thread testThread = new Thread() {
             @Override
             public void run() {
@@ -65,7 +69,11 @@ public class TestMessageShareThread extends TestCase {
                         msThread.submitMessage( s, null);
                     }
                     
-//                    while ( true ){
+                    while ( !msThread.isQueueEmpty() ){
+                        mySleep(50);
+                    }
+//                    while ( true ){ )
+                    
 //                        mySleep(100);
 //                        ResultRecord rez = msThread.pollResultRecord();
 //                        if ( rez != null){
@@ -87,7 +95,7 @@ public class TestMessageShareThread extends TestCase {
         
         testThread.start();
         
-        theSleep(1000);
+        theSleep(10000);
         
         testThread.interrupt();
  
@@ -95,7 +103,7 @@ public class TestMessageShareThread extends TestCase {
             fail("Test took too long to complete. This is wrong test message anyways. it doesn't work like this..");
         }
         
-        boolean allMessagesEqual = compareStringars(testMessages, messagesSubmittedToBlockingSharer);
+        boolean allMessagesEqual = compareStringContainers(testMessages, messagesSubmittedToBlockingSharer);
         assert(allMessagesEqual);
         
 
@@ -169,10 +177,12 @@ public class TestMessageShareThread extends TestCase {
      * @param arl
      * @return 
      */
-    private boolean compareStringars(String[] strar, ArrayList<String> arl) {
+    private boolean compareStringContainers(String[] strar, ArrayList<String> arl) {
         if ( strar.length != arl.size()){
             return false;
         }
+        Arrays.sort(strar);
+        Collections.sort(arl);
         for(int i = 0 ; i < strar.length ; i++){
             String s = strar[i];
             String a = arl.get(i);
