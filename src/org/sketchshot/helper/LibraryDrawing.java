@@ -113,5 +113,51 @@ public class LibraryDrawing extends AbstractLibraryHelper
   private void text(String s, float xx, float yy){
      mFontBoss.text(s, xx, yy);
   }
+
+
+  /**
+   * This method draws a "button" ( a text inside of rectangle)
+   * @param enter
+   * @param b2_x
+   * @param b1_y 
+   */
+   void drawButtonShape(String txt, float x, float y) {
+       float textWidth = mFontBoss.textWidth(txt);
+       float textHeight = mFontBoss.getFontSize();
+       textWidth += 10; // some extra padding for buttons.
+       parent().rect(x,y, textWidth, textHeight);
+       text(txt, x, y);
+       
+   }
+
+   /**
+    * Draws rectangle in center
+    * @param percentage of screen we want to use.
+    * @param color
+    */
+    void rectCenter(float percentage, int color, int totalWidth, int totalHeight) {
+          int newWidth = (int) (totalWidth * percentage);
+          int newHeight = (int) (totalHeight * percentage);
+          int newX = (totalWidth - newWidth) / 2;
+          int newY = (totalHeight - newHeight) / 2;
+          rect(newX, newY , newWidth, newHeight, color);
+          
+    }
+
+
+    /**
+     * Shorthand for drawing rect
+     * @param newX
+     * @param newY
+     * @param newWidth
+     * @param newHeight
+     * @param color (32bit/4byte color code)
+     */
+    private void rect(int newX, int newY, int newWidth, int newHeight, int color) {
+        pushBrush();
+        sketch().fill(color);
+        sketch().rect(newX, newY, newWidth, newHeight);
+        popBrush();
+    }
   
 }
