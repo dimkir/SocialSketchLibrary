@@ -2,7 +2,7 @@ package org.sketchshot;
 import org.sketchshot.ex.LibraryLoadException;
 import org.sketchshot.helper.FontBoss;
 import org.sketchshot.helper.LibConfig;
-import org.sketchshot.helper.Menu;
+import org.sketchshot.helper.GUI;
 import org.sketchshot.helper.MouseManager;
 import org.sketchshot.helper.KeyManager;
 import org.sketchshot.helper.LibraryDrawing;
@@ -10,6 +10,8 @@ import org.sketchshot.helper.ShareDirector;
 import org.sketchshot.helper.ScreenshotManager;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.sketchshot.thread.ResultRecord;
+import org.sketchshot.utils.FixedStringLog;
 import processing.core.*;
 import processing.event.*;
 
@@ -30,6 +32,9 @@ public class Sketchshot  extends AbstractLibraryBase // the AbstractBase just ho
   private static final int C_STRING_LOG_X   = 20;
   private static final int C_STRING_LOG_Y   = 40;
   
+  /** The size in strings of the fixed string log. Incuim it is fixed */
+  private static final int C_FIXED_STRING_LOG_SIZE = 10;
+  
   /**
    * Generally, I encapsulated all of the functionality related to some domains
    * into those classes.
@@ -43,10 +48,10 @@ public class Sketchshot  extends AbstractLibraryBase // the AbstractBase just ho
   private MouseManager mouseManager;           // handles mouse movements
 
   private LibraryDrawing libraryDrawing;       // handles drawing (basic concepts)
-  private Menu menu;                           // more appropriate name should be "gui"
-  private ShareDirector tweetDirector;     // offers convenience twitter messaging API
+  private GUI mGui;                           // more appropriate name should be "gui"
+  private ShareDirector shareDirector;     // offers convenience twitter messaging API
   
-  
+  private FixedStringLog mFixedStringLog;
   
   
   /**
@@ -123,18 +128,21 @@ public class Sketchshot  extends AbstractLibraryBase // the AbstractBase just ho
    */
   private void initLibrary(PApplet parent) throws LibraryLoadException
   {
+    mFixedStringLog = new FixedStringLog(C_FIXED_STRING_LOG_SIZE);
+      
+      
     // *** init all our convenience objects ***
     fontBoss = new FontBoss(parent);
     libraryDrawing = new LibraryDrawing(parent, fontBoss); // what does this library do : draws lines and shit and framerate
-    menu = new Menu(parent, libraryDrawing, fontBoss);
+    mGui = new GUI(parent, libraryDrawing, fontBoss);
     keyManager = new KeyManager(parent); // ?? should it get this parameter?
     mouseManager = new MouseManager(parent);
     screenshotManager = new ScreenshotManager(parent);
-    tweetDirector = new ShareDirector(parent, mLibConfig.getTwitterConfiguration() );  // can throw TwitterDirectorEx
+    shareDirector = new ShareDirector(parent, mLibConfig.getTwitterConfiguration() );  // can throw TwitterDirectorEx
                                                                                        //if twitterConfiguration is NULL
     
     // so if we got here - we have start.
-    tweetDirector.start(); // starts the background tweeting thread (may it be necessary). 
+    shareDirector.start(); // starts the background tweeting thread (may it be necessary). 
     
     //  once we get to here, it means there were no errors in the failables from above.
       // we only register ourselves in case there was failre from the classes above (all failables first).
@@ -200,7 +208,7 @@ public class Sketchshot  extends AbstractLibraryBase // the AbstractBase just ho
     // shut down a thread used by this library.
     println("Dispose method called for library");
     // we don't use any threads (aren't we? and what about tweetDirector?)
-    tweetDirector.shutdown();
+    shareDirector.shutdown();
   }
   
   
@@ -211,7 +219,14 @@ public class Sketchshot  extends AbstractLibraryBase // the AbstractBase just ho
    * DO NOT use println() in this method or other slow calculations, as those heavy calculations may slow down your sketch a lot.
    */
   public void pre(){
-    
+    // restore the pgraphics, so that it looks like the sketch has left it.
+    if ( screenshotManager.hasSavedFrame() ){
+        // restore
+        PImage gr = screenshotManager.getSavedFrame();
+        int w = mParent.g.width;
+        int h = mParent.g.height;
+        mParent.g.copy(gr, 0, 0, w, h, 0, 0, w, h);
+    }
     //libraryDrawing.drawRedRectangle80();
   }
   
@@ -221,42 +236,46 @@ public class Sketchshot  extends AbstractLibraryBase // the AbstractBase just ho
    */
   public void draw(){
     screenshotManager.allocateMemoryIfNotAllocatedFor(mParent.g); // just makes sure that screenshot can work
+    screenshotManager.saveFrame(mParent.g);
     
-    if ( menu.isDisplayedFlag() ){
-       // *************** DISPLAY MENU *********************
-      menu.draw();
-      // here we handle keyboard whilst menu opened
-      if ( keyManager.pressedMenuExitKey() ){
-        menu.setDisplayedFlag(false);
-      }
-      else if ( keyManager.pressedTweetKey() ){
-        PImage picture = screenshotManager.getOriginalSize();
-        tweetDirector.tweetTheMessage("my processing sketch draws cool things ", picture);
-        menu.setDisplayedFlag(false);
-      }
+    if ( mGui.isDisplayedFlag() ){
+                // *************** DISPLAY MENU *********************
+               mGui.draw(mParent.width, mParent.height);
+               // here we handle keyboard whilst menu opened
+               if ( keyManager.pressedMenuExitKey() ){
+                 mGui.setDisplayedFlag(false);
+               }
+               else if ( keyManager.pressedTweetKey() ){
+                 PImage picture = screenshotManager.getOriginalSize();
+                 shareDirector.shareMessage("my processing sketch draws cool things ", picture);
+                 mGui.setDisplayedFlag(false);
+               }
     }
     else{
-      // *************** REGULAR SKETCH RUNNING HANDLING *********************
-      // here we handle keyboard whilst menu closed
-      if ( keyManager.pressedMenuOpenKey() ){
-         screenshotManager.saveImageFrom(mParent.g); // saves to some storage
-         menu.setImageToDisplay(screenshotManager.getThumbnailSize()); // this is temporary method
-                                                                        // here we just assign to menu
-                                                                        // the picture. And menu will 
-                                                                        // try to display it.
-                                                                        // we basically here just want
-                                                                        // to test saving/restoring images.
-         menu.setDisplayedFlag(true);
-      }
+                // *************** REGULAR SKETCH RUNNING HANDLING *********************
+                // here we handle keyboard whilst menu closed
+                if ( keyManager.pressedMenuOpenKey() ){
+                   screenshotManager.saveImageFrom(mParent.g); // saves to some storage
+                   mGui.setImageToDisplay(screenshotManager.getThumbnailSize()); // this is temporary method
+                                                                                  // here we just assign to menu
+                                                                                  // the picture. And menu will 
+                                                                                  // try to display it.
+                                                                                  // we basically here just want
+                                                                                  // to test saving/restoring images.
+                   mGui.setDisplayedFlag(true);
+                }
     }
     
     
     // ************** STANDARD OVERLAYS **************************
     //libraryDrawing.drawLineGrid();
     libraryDrawing.displayFrameRate();
-    libraryDrawing.displayStringLog( tweetDirector.getLogObject() , C_STRING_LOG_X, C_STRING_LOG_Y );
+    ResultRecord rr =  shareDirector.pollResultRecordIfAny();
+    if ( rr != null ){
+        mFixedStringLog.put(millis() + " " + rr.getResultSummaryMessage());
+    }
     
-
+    libraryDrawing.displayStringLog( mFixedStringLog , C_STRING_LOG_X, C_STRING_LOG_Y );
   }
   
   /**
