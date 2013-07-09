@@ -1,9 +1,8 @@
 package org.sketchshot.helper;
-// import some twitter library here.
 
 import java.util.Map;
 import org.sketchshot.utils.FixedStringLog;
-import org.sketchshot.ex.TweetDirectorEx;
+import org.sketchshot.ex.ShareDirectorEx;
 import org.sketchshot.thread.MessageShareThread;
 import org.sketchshot.utils.IConfigXmlSpecification;
 import processing.core.*;
@@ -28,13 +27,7 @@ public class ShareDirector extends AbstractLibraryHelper
    private Map<String, String> mLogOnCredentials;
    
    /**
-    * This is log object, holding last status messages
-    */
-   private FixedStringLog mDirectorLog;
-   private final static int C_LOG_SIZE = 10;
-  
-   /**
-    * @var mTweetThread thread where all the stuff takes b
+    * mTweetThread thread where all the stuff takes b
     */
    private MessageShareThread mTweetThread; 
   
@@ -48,7 +41,7 @@ public class ShareDirector extends AbstractLibraryHelper
     * @throws TweetDirectorEx some kind of exception saying that tweet director couldn't initialize.
     * 
     */
-   public ShareDirector(PApplet parent, Map<String,String> logOnCredentials) throws TweetDirectorEx
+   public ShareDirector(PApplet parent, Map<String,String> logOnCredentials) throws ShareDirectorEx
    {
       super(parent);
       // make quick verification of the credentials. 
@@ -56,11 +49,9 @@ public class ShareDirector extends AbstractLibraryHelper
       // null pointer exception show up inside of thread and mislead me of
       // error cause
       if ( logOnCredentials == null){
-         throw new TweetDirectorEx("Log on credentials cannot be null");
+         throw new ShareDirectorEx("Log on credentials cannot be null");
       }
-      
       mLogOnCredentials = logOnCredentials;
-      mDirectorLog = new FixedStringLog(C_LOG_SIZE);
    }
    
    /**
@@ -75,23 +66,16 @@ public class ShareDirector extends AbstractLibraryHelper
    }
    
    /**
-    *  Tweets the message (actually submits to thread to tweet)
+    *  Shares the message with selected element (actually submits to thread to tweet)
     */
-   public void tweetTheMessage(String tweetMsg, PImage img){
+   public void shareMessage(String tweetMsg, PImage img){
         mTweetThread.submitMessage(tweetMsg, img);
-        log("Submitted message [" + tweetMsg + "] and PImage");
+        println("Submitted message [" + tweetMsg + "] and PImage");
         
-   }
-   
-   /**
-    * Logs to our fixed string log object
-    */
-   void log(String s){
-       mDirectorLog.put(s);
    }
       
     /**
-     *  Starts the thread which is going to send tweets asynchronousely.
+     *  Starts the thread which is going to share messages asynchronously.
      */
     public void start(){
         // i probably should pass some parametes to the thread???
@@ -112,19 +96,4 @@ public class ShareDirector extends AbstractLibraryHelper
          println("TweetDirector::shutdown() :: TweetThread is null");
       }
     }
-    
-    
-    /**
-     * Returns FixedStringLog with last status messages.
-     * (the i0 is the freshiest log message and the iN is the oldest message)
-     * 
-     * @returns  ?? can we return NULL?? what do we do in case there's no log messages?
-     *           is it actually a good structure to return? because it appears that we only need the few latest items. This can be
-     *           implemented with String[], but we also need two more variables "qty and start". this way we will be able to contain log messages in fixed size-array.
-     */
-    public FixedStringLog getLogObject(){
-      // should there always be at least one message in the log??
-      return mDirectorLog;
-    }
-    
 }
