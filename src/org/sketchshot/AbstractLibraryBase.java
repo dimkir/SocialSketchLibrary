@@ -29,4 +29,8 @@ abstract class AbstractLibraryBase
   protected void println(String s){
      logger.println(s);
   }   
+  
+  protected long millis(){
+       return System.currentTimeMillis();
+  }
 }
