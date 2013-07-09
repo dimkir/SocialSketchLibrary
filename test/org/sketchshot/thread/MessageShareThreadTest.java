@@ -13,14 +13,14 @@ import junit.framework.TestCase;
  * tweeting thread.
  * @author Dimitry Alhambra <dimitry@languagekings.com>
  */
-public class TestMessageShareThread extends TestCase {
+public class MessageShareThreadTest extends TestCase {
     
     /**
      * This is point through which Thread is receiving parameters
      * from the outside.
      */
     
-    public TestMessageShareThread(String testName) {
+    public MessageShareThreadTest(String testName) {
         super(testName);
     }
 
