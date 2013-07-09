@@ -98,7 +98,7 @@ implements IConfigXmlSpecification // for constants of the credentials fields.
     println("Started run() method");
     while ( getRunning() ){
         println("Running thread loop");
-        sleep(100);
+        sleep(50);
         if ( !isInitialized() ){
            initAttempt();
         }
@@ -182,6 +182,19 @@ implements IConfigXmlSpecification // for constants of the credentials fields.
      //TODO: here there's stub which just returns shite.
      return true;
   }
+  
+  /**
+   * Returns whether the queue is empty. 
+   * Remember that next "action time" of the item in the queue,
+   * may be long in the future, and thus queue may NOT be empty
+   * but will return NULLs on pop().
+   * Also keep in mind that this method is synchronized() as 
+   * we only are allowed to access the queue from synchronized methods.
+   */
+  synchronized public boolean isQueueEmpty(){
+      return (mSmartQueue.itemsOnQueue() == 0);
+  }
+  
   
   /**
    *  Submit to message queue. (Wraps message in MesssageRecord
