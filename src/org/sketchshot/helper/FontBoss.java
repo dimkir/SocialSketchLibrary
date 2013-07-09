@@ -15,7 +15,7 @@ public class FontBoss extends AbstractLibraryHelper
   // new PFont(InputStream) only works with VLW fonts.
   private static final String C_FONT_PATH_WITHIN_JAR = "/res/fonts/Commando-32.vlw";
   private static final String C_DEFAULT_FONT_NAME = "Arial"; // incuim createFont() param
-  private static final int    C_DEFAULT_FONT_SIZE = 32;      // incuim createFont() param  
+  private static final int    C_DEFAULT_FONT_SIZE = 16;      // incuim createFont() param  
   private PFont mFont; // the library inits PFont to use. So far default is createFont() from "Arial" but we need to supply our own font.  
   
   
@@ -72,6 +72,15 @@ public class FontBoss extends AbstractLibraryHelper
        //?? and what about color?
        sketch().text(s, xx ,yy);
   }
+
+  /**
+   * Returns text width of current font.
+   * @param txt
+   * @return 
+   */
+    float textWidth(String txt) {
+        return sketch().textWidth(txt);
+    }
   
     
 }
