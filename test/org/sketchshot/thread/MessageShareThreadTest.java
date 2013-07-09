@@ -69,7 +69,7 @@ public class MessageShareThreadTest extends TestCase {
                         msThread.submitMessage( s, null);
                     }
                     
-                    while ( !msThread.isQueueEmpty() ){
+                    while ( !msThread.isJobQueueEmpty() ){
                         mySleep(50);
                     }
 //                    while ( true ){ )
