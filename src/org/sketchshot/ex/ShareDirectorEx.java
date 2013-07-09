@@ -3,9 +3,9 @@ package org.sketchshot.ex;
  * This is exception thrown by TweetDirector.
  */
 
-public class TweetDirectorEx extends LibraryLoadException
+public class ShareDirectorEx extends LibraryLoadException
 {
-  public TweetDirectorEx(String s){
+  public ShareDirectorEx(String s){
     super(s);
   }
 }
