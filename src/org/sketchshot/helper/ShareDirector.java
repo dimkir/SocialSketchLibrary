@@ -1,9 +1,9 @@
 package org.sketchshot.helper;
 
 import java.util.Map;
-import org.sketchshot.utils.FixedStringLog;
 import org.sketchshot.ex.ShareDirectorEx;
 import org.sketchshot.thread.MessageShareThread;
+import org.sketchshot.thread.ResultRecord;
 import org.sketchshot.utils.IConfigXmlSpecification;
 import processing.core.*;
 /**
@@ -29,7 +29,7 @@ public class ShareDirector extends AbstractLibraryHelper
    /**
     * mTweetThread thread where all the stuff takes b
     */
-   private MessageShareThread mTweetThread; 
+   private MessageShareThread mShareThread; 
   
    /**
     * What's the contract? In case the credentials contain "invalid" information (like gibberish or 
@@ -69,7 +69,7 @@ public class ShareDirector extends AbstractLibraryHelper
     *  Shares the message with selected element (actually submits to thread to tweet)
     */
    public void shareMessage(String tweetMsg, PImage img){
-        mTweetThread.submitMessage(tweetMsg, img);
+        mShareThread.submitMessage(tweetMsg, img);
         println("Submitted message [" + tweetMsg + "] and PImage");
         
    }
@@ -79,8 +79,8 @@ public class ShareDirector extends AbstractLibraryHelper
      */
     public void start(){
         // i probably should pass some parametes to the thread???
-        mTweetThread = new MessageShareThread(new ShareDirectorParamsForThread(this, new BlockingTweetMsgSharer(getLogger())));
-        mTweetThread.start();
+        mShareThread = new MessageShareThread(new ShareDirectorParamsForThread(this, new BlockingTweetMsgSharer(getLogger())));
+        mShareThread.start();
     }
       
     /**
@@ -89,11 +89,20 @@ public class ShareDirector extends AbstractLibraryHelper
     public void shutdown()
     {
        // ?? shutdown background thread.. but what do we do in case the tweeting process is still on?
-      if  ( mTweetThread != null ){
-         mTweetThread.setRunning(false); // thread will shutdown eventually.
+      if  ( mShareThread != null ){
+         mShareThread.setRunning(false); // thread will shutdown eventually.
       }
       else{
          println("TweetDirector::shutdown() :: TweetThread is null");
       }
+    }
+    
+    /**
+     * Returns result record (if there's any) or NULL if no result is available currrently.
+     * @return 
+     */
+    public ResultRecord pollResultRecordIfAny(){
+        ResultRecord rr = mShareThread.pollResultRecord();
+        return rr;
     }
 }
