@@ -1,6 +1,6 @@
-package org.twitshot;
+package org.sketchshot.utils;
 
-import org.twitshot.utils.FixedStringLog;
+import org.sketchshot.utils.FixedStringLog;
 import static junit.framework.Assert.assertEquals;
 import junit.framework.TestCase;
 
@@ -91,19 +91,6 @@ public class FixedStringLogTest extends TestCase {
         FixedStringLog instance = null;
         int expResult = 0;
         int result = instance.capacity();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of lastIndex method, of class FixedStringLog.
-     */
-    public void testLastIndex() {
-        System.out.println("lastIndex");
-        FixedStringLog instance = null;
-        int expResult = 0;
-        int result = instance.lastIndex();
         assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
