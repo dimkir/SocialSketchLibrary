@@ -1,0 +1,69 @@
+buildscript {
+    repositories {
+        maven { url "http://repo.spring.io/libs-snapshot" }
+        mavenLocal()
+    }
+//    dependencies {
+//        classpath("org.springframework.boot:spring-boot-gradle-plugin:0.5.0.M5")
+//    }
+}
+
+apply plugin: 'java'
+//apply plugin: 'application'
+//apply plugin: 'spring-boot'
+
+// this seems to be deprecated.
+//mainClassName = "org.socialsketch.server.Main"
+
+jar {
+    baseName = 'socialsketchlibrary'
+    version =  '0.1.0'
+}
+
+task copyToLib(type: Copy) {
+    into "$buildDir/output/libs"
+    from configurations.runtime
+}
+
+
+build.dependsOn(copyToLib)
+
+
+repositories {
+   mavenCentral()
+   flatDir(dirs: 'c:/Users/Ernesto Guevara/Desktop/ProcessingBin/processing-2.0.2/lib')
+   flatDir(dirs: 'c:/Users/Ernesto Guevara/Desktop/ProcessingBin/processing-2.0.2/core/library')
+   maven { url "http://repo.spring.io/libs-snapshot" }  
+ 
+}
+
+dependencies {
+//    compile("org.springframework:spring-jdbc:4.0.0.M3")    
+//	compile 'mysql:mysql-connector-java:5.1.26'
+	compile 'log4j:log4j:1.2.17'
+	compile 'org.twitter4j:twitter4j-core:3.0.5'
+	compile 'org.twitter4j:twitter4j-stream:3.0.5'
+//	releaseJars 'org.twitter4j:twitter4j-stream:3.0.5'
+        
+//        compile("org.springframework.boot:spring-boot-starter:0.5.0.M5")
+        
+//        compile("org.springframework.boot:spring-boot-starter-web:0.5.0.M5")        
+//        compile("org.thymeleaf:thymeleaf-spring3:2.0.17")
+        
+        testCompile group: 'junit', name: 'junit', version: '3.+'
+        
+//        // option 1 (jar without version numbers)
+//        compile name: 'DimUtilsSrc'
+//        // if you leave this line
+//        // it would load file
+//        // d:\wamp\www\javalib\11November\DimutilsSrc\build\libs\DimutilsSrc.jar
+
+		 compile name: 'pde'
+		 compile name: 'core'
+    
+//        // option 2 (jar WITH version numbers)
+//        compile ':DimUtilsSrc:0.1'   
+//        // if you leave this line
+//        // this would load file
+//        // d:\wamp\www\javalib\11November\DimutilsSrc\build\libs\DimutilsSrc-0.1.jar
+}
