@@ -2,6 +2,8 @@
 *.java~
 MyBasicLibrary.drjava
 
+.gradle/
+
 # Compiled source #
 ###################
 *.com
@@ -19,7 +21,7 @@ MyBasicLibrary.drjava
 *.dmg
 *.gz
 *.iso
-*.jar
+//*.jar
 *.rar
 *.tar
 *.zip
