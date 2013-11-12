@@ -31,8 +31,9 @@ build.dependsOn(copyToLib)
 
 repositories {
    mavenCentral()
-   flatDir(dirs: 'c:/Users/Ernesto Guevara/Desktop/ProcessingBin/processing-2.0.2/lib')
-   flatDir(dirs: 'c:/Users/Ernesto Guevara/Desktop/ProcessingBin/processing-2.0.2/core/library')
+//   flatDir(dirs: 'c:/Users/Ernesto Guevara/Desktop/ProcessingBin/processing-2.0.2/lib')
+//   flatDir(dirs: 'c:/Users/Ernesto Guevara/Desktop/ProcessingBin/processing-2.0.2/core/library')
+   flatDir(dirs: 'lib')
    maven { url "http://repo.spring.io/libs-snapshot" }  
  
 }
@@ -58,8 +59,8 @@ dependencies {
 //        // it would load file
 //        // d:\wamp\www\javalib\11November\DimutilsSrc\build\libs\DimutilsSrc.jar
 
-		 compile name: 'pde'
-		 compile name: 'core'
+		 compile name: 'pde-2.0.2'
+		 compile name: 'core-2.0.2'
     
 //        // option 2 (jar WITH version numbers)
 //        compile ':DimUtilsSrc:0.1'   
