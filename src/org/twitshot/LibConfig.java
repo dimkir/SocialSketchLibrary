@@ -15,7 +15,7 @@ import java.util.Map;
  * Has convenience getters to fluently access to the data.
  * On failure? - class is unusable. And constructor throws exception, means noone ever receives instance reference.
  */
-class LibConfig extends AbstractLibraryHelper
+public class LibConfig extends AbstractLibraryHelper
   implements IConfigXmlSpecification
   // this is so that we can construct the stringar to return TwitterConfiguration parameters.
 {
@@ -46,7 +46,7 @@ class LibConfig extends AbstractLibraryHelper
    * which USES ENVIRONMENT VARIABLE {@code C_ENVIRONMENT_VARIABLE_NAME} 
    * to retrieve path to the default constructor.
    */
-  LibConfig(PApplet papp) throws ConfigParsingException
+  public LibConfig(PApplet papp) throws ConfigParsingException
   {
      super(papp);
      // now WHERE DO WE GET THE CONFIGURATION FROM?
@@ -64,7 +64,7 @@ class LibConfig extends AbstractLibraryHelper
    *        
    * @throws ConfigParsingException (LibraryLoadException)
    */
-  LibConfig(PApplet papp, String xmlFilename) throws ConfigParsingException
+  public LibConfig(PApplet papp, String xmlFilename) throws ConfigParsingException
   {
      super(papp);
      loadConfig(papp, xmlFilename);   // this one throws ConfigParsingException
